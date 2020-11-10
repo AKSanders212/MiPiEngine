@@ -2,26 +2,20 @@
 # Created by Aaron Keith Sanders
 # Project start date 11/08/2020
 
+import MiPi
 import pygame
 
 # Window initialization
+MiPi.MiPi.EngineScreen()
+MiPi.MiPi.EngineInit()
 
-# Creating the dimensions for the game engine screen
-width = 600
-height = 600
 
-screen = pygame.display.set_mode((width,height))
 
-# This is needed to display the window
-pygame.display.flip()
 
-# Loop used to keep the engine window running until the user closes it
-running = True
 
-while (running):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+
+
+
 
 
 
