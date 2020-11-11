@@ -5,9 +5,12 @@
 import MiPi
 import pygame
 
+# Make sure to initialize pygame
+pygame.init()
+
 # Window initialization
-MiPi.MiPi.EngineScreen()
 MiPi.MiPi.EngineInit()
+MiPi.MiPi.EngineScreen()
 
 
 

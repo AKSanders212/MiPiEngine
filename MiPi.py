@@ -5,7 +5,13 @@ import pygame
 import logging
 import datetime
 
+# Initialize pygame
+pygame.init()
+
 # global variables
+GREEN = (0,255,0)
+verts = [(50, 0), (100, 50), (50, 50), (0, 50)]
+size = (200, 200)
 
 # Creating the dimensions for the game engine screen
 width = 600
@@ -20,7 +26,9 @@ class MiPi:
 
     @staticmethod
     def EngineScreen():
+        title = "MiPi Engine"
         screen = pygame.display.set_mode((width, height))
+        pygame.display.set_caption(title)
 
         # This is needed to display the window
         pygame.display.flip()
@@ -33,10 +41,18 @@ class MiPi:
                 if event.type == pygame.QUIT:
                     running = False
 
-    # This method is called upon starting the MiPi engine.
+            # Example code to draw a triangle
+            triangle = pygame.Surface(size)
+            pygame.draw.polygon(triangle, GREEN, verts)
+            screen.blit(triangle, (275, 300))
+            pygame.display.update()
+
+
     @staticmethod
     def EngineInit():
+        # This method is called upon starting the MiPi engine
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
         print(current_date, ": MiPi Engine v1.0 has been initialized")
         logging.info(current_date)
         logging.info("MiPi Engine v1.0 has been initialized.")
+
