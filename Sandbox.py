@@ -10,7 +10,7 @@ pygame.init()
 
 # Window initialization
 MiPi.MiPi.EngineInit()
-MiPi.MiPi.EngineScreen()
+MiPi.MiPi.MainFunctions()
 
 
 

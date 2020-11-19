@@ -37,6 +37,7 @@ eheight = 625
 
 # Datetime vars
 current_date = datetime.datetime.now()
+# Engine screens
 gamescreen = pygame.display.set_mode((width, height))
 enginescreen = pygame.display.set_mode((ewidth, eheight))
 
@@ -52,9 +53,11 @@ game_title = "Gameplay Test"
 # Pygame_gui UI elements
 play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 150), (100, 50)),
                                            text='Test Game', manager=mainframe)
-# Create this variable as global, else we get some cranky error!
+dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((25, 25), (400, 50)), starting_option=
+                                              "File", options_list=["Run", "Close"], manager=mainframe)
+# Running state vars
 game_running = False
-
+engine_running = True
 
 # ---------------------------------------------------------------------------------------------------------#
 
@@ -63,10 +66,10 @@ class MiPi:
         self
 
     @staticmethod
-    def EngineScreen():
+    def MainFunctions():
 
         delta_time = sysclock.tick(mainFPS) / 1000.0
-
+        game_running = False
         engine_running = True
 
         while engine_running:
@@ -77,35 +80,43 @@ class MiPi:
                 enginescreen.fill(LIGHTCOLOR)
 
                 if event.type == pygame.USEREVENT:
-                    if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
                         if event.ui_element == play_button:
                             print(current_date, "Gameplay test window has been launched!")
                             engine_running = False
                             game_running = True
+
+                if event.type == pygame.USEREVENT:
+                    if event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+                        if event.text == "Run":
+                            print(current_date, "Gameplay test window has been launched!")
+                            engine_running = False
+                            game_running = True
                         else:
-                            print("Button not found!")
+                            print("Menu not found!")
 
-                pygame.display.flip()
                 mainframe.process_events(event)
+                mainframe.draw_ui(enginescreen)
+                mainframe.update(delta_time)
 
-            mainframe.update(delta_time)
-            mainframe.draw_ui(enginescreen)
             pygame.display.update()
+            pygame.display.flip()
+
 
         while game_running:
             for game in pygame.event.get():
                 if game.type == pygame.QUIT:
                     game_running = False
 
+                mainframe.process_events(game)
                 enginescreen.fill(NOCOLOR)
                 gamescreen.fill(DARKGRAY)
-                mainframe.process_events(game)
                 pygame.display.set_caption(game_title)
                 MiPi.DrawTriangle()
-                pygame.display.flip()
+                mainframe.update(delta_time)
 
+            pygame.display.flip()
             pygame.display.update()
-            mainframe.update(delta_time)
 
     @staticmethod
     def EngineInit():
@@ -122,3 +133,4 @@ class MiPi:
         pygame.draw.polygon(triangle, GREEN, verts)
         gamescreen.blit(triangle, (0, 0))
         pygame.display.update()
+
