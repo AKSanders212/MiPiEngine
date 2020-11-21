@@ -20,6 +20,7 @@ WHITE = (255, 255, 255)
 DARKGRAY = (169, 169, 169)
 LIGHTCOLOR = (170, 170, 170)
 DARKSHADE = (100, 100, 100)
+BLACK = (0, 0, 0)
 # Fonts
 CorbelFont = pygame.font.SysFont('Corbel', 35)
 guitext = CorbelFont.render('File', True, WHITE)
@@ -38,7 +39,7 @@ eheight = 625
 # Datetime vars
 current_date = datetime.datetime.now()
 # Engine screens
-gamescreen = pygame.display.set_mode((width, height))
+gamescreen = pygame.display.set_mode((width, height), 0, 32)
 enginescreen = pygame.display.set_mode((ewidth, eheight))
 
 # Main engine variables and constants
@@ -58,7 +59,6 @@ dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((25, 25)
 # Running state vars
 game_running = False
 engine_running = True
-
 # ---------------------------------------------------------------------------------------------------------#
 
 class MiPi:
@@ -71,6 +71,11 @@ class MiPi:
         delta_time = sysclock.tick(mainFPS) / 1000.0
         game_running = False
         engine_running = True
+        speed = 5
+        pos_x = 0
+        pos_y = 0
+        triangle = pygame.Surface(size)
+        pygame.draw.polygon(triangle, GREEN, verts)
 
         while engine_running:
             for event in pygame.event.get():
@@ -93,7 +98,7 @@ class MiPi:
                             engine_running = False
                             game_running = True
                         else:
-                            print("Menu not found!")
+                            print(current_date, "Window failed to open")
 
                 mainframe.process_events(event)
                 mainframe.draw_ui(enginescreen)
@@ -102,21 +107,53 @@ class MiPi:
             pygame.display.update()
             pygame.display.flip()
 
-
         while game_running:
             for game in pygame.event.get():
                 if game.type == pygame.QUIT:
+                    # Get engine to run again: engine_running = True
                     game_running = False
 
                 mainframe.process_events(game)
                 enginescreen.fill(NOCOLOR)
                 gamescreen.fill(DARKGRAY)
-                pygame.display.set_caption(game_title)
-                MiPi.DrawTriangle()
-                mainframe.update(delta_time)
 
-            pygame.display.flip()
-            pygame.display.update()
+                pygame.key.set_repeat(1, 10) # Not a friendly way of movement while key is held down, but works!
+                # Movement loop
+                if game.type == pygame.KEYDOWN:
+                    if game.key == pygame.K_LEFT:
+                        pos_x -= speed
+                        print("Left key pressed")
+                    if game.key == pygame.K_RIGHT:
+                        pos_x += speed
+                        print("Right key pressed")
+                    if game.key == pygame.K_UP:
+                        pos_y -= speed
+                        print("Up key pressed")
+                    if game.key == pygame.K_DOWN:
+                        pos_y += speed
+                        print("Down key pressed")
+                elif game.type == pygame.KEYUP:
+                    if game.key == pygame.K_LEFT:
+                        pos_x -= 0
+                        print("Left key released")
+                    if game.key == pygame.K_RIGHT:
+                        pos_x += 0
+                        print("Right key released")
+                    if game.key == pygame.K_UP:
+                        pos_y -= 0
+                        print("Up key released")
+                    if game.key == pygame.K_DOWN:
+                        pos_y += 0
+                        print("Down key released")
+                    if game.key == pygame.K_ESCAPE:
+                        game_running = False
+
+                pygame.display.set_caption(game_title)
+                gamescreen.fill(BLACK)
+                gamescreen.blit(triangle, (pos_x, pos_y))
+                pygame.display.flip()
+                pygame.display.update()
+                mainframe.update(delta_time)
 
     @staticmethod
     def EngineInit():
@@ -125,12 +162,3 @@ class MiPi:
         print(current_date, ": MiPi Engine v1.0 has been initialized")
         logging.info(current_date)
         logging.info("MiPi Engine v1.0 has been initialized.")
-
-    @staticmethod
-    def DrawTriangle():
-        # Example code to draw a triangle
-        triangle = pygame.Surface(size)
-        pygame.draw.polygon(triangle, GREEN, verts)
-        gamescreen.blit(triangle, (0, 0))
-        pygame.display.update()
-
