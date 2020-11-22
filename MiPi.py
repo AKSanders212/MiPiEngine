@@ -56,9 +56,7 @@ play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 150),
                                            text='Test Game', manager=mainframe)
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((25, 25), (400, 50)), starting_option=
                                               "File", options_list=["Run", "Close"], manager=mainframe)
-# Running state vars
-game_running = False
-engine_running = True
+
 # ---------------------------------------------------------------------------------------------------------#
 
 class MiPi:
@@ -116,7 +114,8 @@ class MiPi:
         while game_running:
             for game in pygame.event.get():
                 if game.type == pygame.QUIT:
-                    # Get engine to run again: engine_running = True
+                    pygame.display.set_caption(engine_title)
+                    MiPi.MainFunctions()
                     game_running = False
 
                 gamescreen.fill(DARKGRAY)
@@ -150,6 +149,8 @@ class MiPi:
                         pos_y += 0
                         print("Down key released")
                     if game.key == pygame.K_ESCAPE:
+                        pygame.display.set_caption(engine_title)
+                        MiPi.MainFunctions()
                         game_running = False
 
                 pygame.display.set_caption(game_title)
