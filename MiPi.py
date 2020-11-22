@@ -7,6 +7,7 @@ import pygame_gui
 from pygame_gui import *
 import logging
 import datetime
+import Render
 
 # Initialize pygame
 pygame.init()
@@ -14,7 +15,6 @@ pygame.init()
 # --------------------------------- All Global Variables ----------------------------------------------------#
 # Color constants
 GREEN = (0, 255, 0)
-NOCOLOR = (0, 0, 0)
 LIGHT_BLUE = (173, 216, 230)
 WHITE = (255, 255, 255)
 DARKGRAY = (169, 169, 169)
@@ -71,11 +71,11 @@ class MiPi:
         delta_time = sysclock.tick(mainFPS) / 1000.0
         game_running = False
         engine_running = True
-        speed = 5
+        speed = 10
         pos_x = 0
         pos_y = 0
-        triangle = pygame.Surface(size)
-        pygame.draw.polygon(triangle, GREEN, verts)
+
+        Render.Shapes.CreateTriangle()
 
         while engine_running:
             for event in pygame.event.get():
@@ -99,13 +99,19 @@ class MiPi:
                             game_running = True
                         else:
                             print(current_date, "Window failed to open")
+                        if event.text == "Close":
+                            print(current_date, "Application has been closed")
+                            engine_running = False
+                            game_running = False
+                        else:
+                            print(current_date, "Application failed to close")
 
                 mainframe.process_events(event)
                 mainframe.draw_ui(enginescreen)
                 mainframe.update(delta_time)
 
-            pygame.display.update()
             pygame.display.flip()
+            pygame.display.update()
 
         while game_running:
             for game in pygame.event.get():
@@ -113,8 +119,6 @@ class MiPi:
                     # Get engine to run again: engine_running = True
                     game_running = False
 
-                mainframe.process_events(game)
-                enginescreen.fill(NOCOLOR)
                 gamescreen.fill(DARKGRAY)
 
                 pygame.key.set_repeat(1, 10) # Not a friendly way of movement while key is held down, but works!
@@ -149,11 +153,13 @@ class MiPi:
                         game_running = False
 
                 pygame.display.set_caption(game_title)
-                gamescreen.fill(BLACK)
-                gamescreen.blit(triangle, (pos_x, pos_y))
+                gamescreen.blit(Render.triangle, (pos_x, pos_y))
+                # The below is commented out, because UI is NOT being drawn to the game screen.
+                # If you decide to add pygame_gui UI widgets, then please use these!
+                # mainframe.process_events(game)
+                # mainframe.update(delta_time)
                 pygame.display.flip()
                 pygame.display.update()
-                mainframe.update(delta_time)
 
     @staticmethod
     def EngineInit():
