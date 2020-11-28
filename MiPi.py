@@ -45,7 +45,7 @@ enginescreen = pygame.display.set_mode((ewidth, eheight))
 # Main engine variables and constants
 mainframe = pygame_gui.UIManager((800, 625))
 sysclock = pygame.time.Clock()
-mainFPS = 60
+mainFPS = 110
 # Main engine frame settings
 engine_title = "MiPi Engine"
 pygame.display.set_caption(engine_title)
@@ -56,6 +56,9 @@ play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((150, 150),
                                            text='Test Game', manager=mainframe)
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((25, 25), (400, 50)), starting_option=
                                               "File", options_list=["Run", "Close"], manager=mainframe)
+
+# Sprite and spritesheet variables
+
 
 # ---------------------------------------------------------------------------------------------------------#
 
@@ -69,7 +72,7 @@ class MiPi:
         delta_time = sysclock.tick(mainFPS) / 1000.0
         game_running = False
         engine_running = True
-        speed = 10
+        speed = 5
         pos_x = 0
         pos_y = 0
 
@@ -103,6 +106,10 @@ class MiPi:
                             game_running = False
                         else:
                             print(current_date, "Application failed to close")
+
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_ESCAPE:
+                        engine_running = False
 
                 mainframe.process_events(event)
                 mainframe.draw_ui(enginescreen)
@@ -154,13 +161,22 @@ class MiPi:
                         game_running = False
 
                 pygame.display.set_caption(game_title)
-                gamescreen.blit(Render.triangle, (pos_x, pos_y))
+                #MiPi.RenderTest(pos_x, pos_y)
+                MiPi.TestSprite(pos_x, pos_y)
                 # The below is commented out, because UI is NOT being drawn to the game screen.
                 # If you decide to add pygame_gui UI widgets, then please use these!
                 # mainframe.process_events(game)
                 # mainframe.update(delta_time)
+                sysclock.tick(mainFPS)
                 pygame.display.flip()
                 pygame.display.update()
+
+    def RenderTest(x, y):
+        gamescreen.blit(Render.triangle, (x, y))
+
+    def TestSprite(x, y):
+        testsprite = pygame.image.load('sprites/testsprite.png').convert_alpha()
+        gamescreen.blit(testsprite, (x, y))
 
     @staticmethod
     def EngineInit():
