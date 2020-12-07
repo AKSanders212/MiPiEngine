@@ -19,7 +19,7 @@ pygame.init()
 
 # Window initialization
 MiPi.MiPi.EngineInit()
-MiPi.MiPi.MainFunctions()
+MiPi.MiPi.Main()
 
 
 
