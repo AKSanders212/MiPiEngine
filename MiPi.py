@@ -7,6 +7,8 @@
 import pygame
 from pygame import *
 import pygame_gui
+from pygame_gui.core.utility import create_resource_path
+from pygame_gui.elements import UIImage
 from pygame_gui import *
 import logging
 import datetime
@@ -100,7 +102,42 @@ class MiPi:
                                 rect=pygame.Rect((200, 200), (260, 300)),
                                 manager=MiPiGUI.mainframe, window_title="Select a sprite file",
                                 initial_file_path="D:/dev/pythondev/MiPiEngine/MiPiEngine",
-                                visible=True)
+                                allow_existing_files_only=True, visible=True)
+
+                if event.type == pygame.USEREVENT:
+                    if event.user_type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED:
+                        if MiPiGUI.import_sprite is not None:
+                            MiPiGUI.import_sprite.kill()
+
+                        try:
+                            sprite_path = create_resource_path(event.text)
+                            sprite_image = pygame.image.load(sprite_path).convert_alpha()
+                            sprite_rect = sprite_image.get_rect()
+                            aspect_ratio = sprite_rect.width / sprite_rect.height
+                            scalability = False
+
+                            if sprite_rect.width > MiPiGUI.max_image_display_dimensions[0]:
+                                sprite_rect.width = MiPiGUI.max_image_display_dimensions[0]
+                                sprite_rect.height = int(sprite_rect.width / aspect_ratio)
+                                scalability = True
+
+                            if sprite_rect.height > MiPiGUI.max_image_display_dimensions[1]:
+                                sprite_rect.height = MiPiGUI.max_image_display_dimensions[1]
+                                sprite_rect.width = int(sprite_rect.height * aspect_ratio)
+                                scalability = True
+
+                            if scalability:
+                                sprite_image = pygame.transform.smoothscale(sprite_image,
+                                                                            sprite_rect.size)
+
+                            sprite_rect.center = (400, 300)
+
+                            MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
+                                                            image_surface=sprite_image,
+                                                            manager=MiPiGUI.mainframe)
+
+                        except pygame.error:
+                            pass
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE:
