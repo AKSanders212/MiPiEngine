@@ -19,3 +19,4 @@ import_sprite = None
 g_screen_x = 800
 g_screen_y = 625
 max_image_display_dimensions = (g_screen_x / 3, g_screen_y / 3)
+

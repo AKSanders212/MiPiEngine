@@ -12,19 +12,13 @@
 # Third party modules: pygame, pygame_gui, pygame_functions
 
 import MiPi
-import pygame
-
-# Make sure to initialize pygame
-pygame.init()
-
-# Window initialization
-MiPi.MiPi.EngineInit()
-MiPi.MiPi.Main()
 
 
+def main():
+    # Window initialization
+    MiPi.MiPi.EngineInit()
+    MiPi.MiPi.Main()
 
 
-
-
-
-
+if __name__ == '__main__':
+    main()

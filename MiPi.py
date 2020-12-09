@@ -15,6 +15,8 @@ import datetime
 import Render
 import MiPiGUI
 from MiPiGUI import *
+import MiPiSettings
+from MiPiSettings import *
 
 # Initialize pygame
 pygame.init()
@@ -50,22 +52,24 @@ pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gameplay Test"
 
+# Custom logging levels:
+editor_error = ': The editor has no content to pass to the game screen!'
+
+
 # ---------------------------------------------------------------------------------------------------------#
 
 class MiPi:
     def __init__(self):
         self
 
-    @staticmethod
-    def Main():
-
+    @classmethod
+    def Main(cls):
         delta_time = sysclock.tick(mainFPS) / 1000.0
         game_running = False
         engine_running = True
         speed = 5
         pos_x = 0
         pos_y = 0
-
 
         Render.Shapes.CreateTriangle()
 
@@ -79,9 +83,13 @@ class MiPi:
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
                         if event.ui_element == MiPiGUI.play_button:
-                            print(current_date, "Gameplay test window has been launched!")
-                            engine_running = False
-                            game_running = True
+                            if not MiPiSettings.editor_has_content:
+                                print(current_date, editor_error)
+                                logging.warning(current_date, editor_error)
+                            else:
+                                print(current_date, "Gameplay test window has been launched!")
+                                engine_running = False
+                                game_running = True
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
@@ -110,9 +118,9 @@ class MiPi:
                             MiPiGUI.import_sprite.kill()
 
                         try:
-                            sprite_path = create_resource_path(event.text)
-                            sprite_image = pygame.image.load(sprite_path).convert_alpha()
-                            sprite_rect = sprite_image.get_rect()
+                            MiPiSettings.sprite_path = create_resource_path(event.text)
+                            MiPiSettings.sprite_image = pygame.image.load(MiPiSettings.sprite_path).convert_alpha()
+                            sprite_rect = MiPiSettings.sprite_image.get_rect()
                             aspect_ratio = sprite_rect.width / sprite_rect.height
                             scalability = False
 
@@ -127,14 +135,16 @@ class MiPi:
                                 scalability = True
 
                             if scalability:
-                                sprite_image = pygame.transform.smoothscale(sprite_image,
-                                                                            sprite_rect.size)
+                                MiPiSettings.sprite_image = pygame.transform.smoothscale(MiPiSettings.sprite_image,
+                                                                                         sprite_rect.size)
 
-                            sprite_rect.center = (400, 300)
+                            sprite_rect.center = (150, 200)
 
                             MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
-                                                            image_surface=sprite_image,
+                                                            image_surface=MiPiSettings.sprite_image,
                                                             manager=MiPiGUI.mainframe)
+
+                            MiPiSettings.editor_has_content = True
 
                         except pygame.error:
                             pass
@@ -159,7 +169,7 @@ class MiPi:
 
                 gamescreen.fill(Render.BLUE)
 
-                pygame.key.set_repeat(1, 10) # Not a friendly way of movement while key is held down, but works!
+                pygame.key.set_repeat(1, 10)  # Not a friendly way of movement while key is held down, but works!
                 # Movement loop
                 if game.type == pygame.KEYDOWN:
                     if game.key == pygame.K_LEFT:
@@ -193,8 +203,8 @@ class MiPi:
                         game_running = False
 
                 pygame.display.set_caption(game_title)
-                #MiPi.RenderTest(pos_x, pos_y)
-                MiPi.TestSprite(pos_x, pos_y)
+                # MiPi.RenderTest(pos_x, pos_y)
+                MiPi.LoadSprite(pos_x, pos_y)
                 # The below is commented out, because UI is NOT being drawn to the game screen.
                 # If you decide to add pygame_gui UI widgets, then please use these!
                 # mainframe.process_events(game)
@@ -203,14 +213,21 @@ class MiPi:
                 pygame.display.flip()
                 pygame.display.update()
 
+        return MiPiSettings.sprite_image, MiPiSettings.sprite_path
+
     @classmethod
     def RenderTest(cls, x, y):
         gamescreen.blit(Render.triangle, (x, y))
 
     @classmethod
-    def TestSprite(cls, x, y):
-        testsprite = pygame.image.load('sprites/testsprite.png').convert_alpha()
-        gamescreen.blit(testsprite, (x, y))
+    def LoadSprite(cls, x, y):
+        try:
+            testsprite = MiPiSettings.sprite_image
+            gamescreen.blit(testsprite, (x, y))
+            if testsprite is None:
+                print(editor_error)
+        except IOError as e:
+            pass
 
     @staticmethod
     def EngineInit():
