@@ -50,7 +50,7 @@ mainFPS = 110
 engine_title = "MiPi Engine"
 pygame.display.set_caption(engine_title)
 # Game window settings
-game_title = "Gameplay Test"
+game_title = "Gamescreen"
 
 # Custom logging levels:
 editor_error = ': The editor has no content to pass to the game screen!'
@@ -79,6 +79,9 @@ class MiPi:
                     engine_running = False
 
                 enginescreen.fill(Render.LIGHTCOLOR)
+                MiPiGUI.GUI.EditorScreen()
+                # MiPiGUI Labels
+                enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
@@ -97,7 +100,7 @@ class MiPi:
                             print(current_date, "Gameplay test window has been launched!")
                             engine_running = False
                             game_running = True
-                        else:
+                        if event.text != "Run" or event.text != "Import Sprite" and engine_running:
                             print(current_date, "Window failed to open")
                         if event.text == "Close":
                             print(current_date, "Application has been closed")
@@ -137,8 +140,14 @@ class MiPi:
                             if scalability:
                                 MiPiSettings.sprite_image = pygame.transform.smoothscale(MiPiSettings.sprite_image,
                                                                                          sprite_rect.size)
+                            # Make these values editable in a gui by the user
+                            sprite_rect.x = 120
+                            sprite_rect.y = 375
 
-                            sprite_rect.center = (150, 200)
+                            # Create an if statement to check for boundaries of tilemaps/bgs and sprites
+                            # Make sure the boundaries are set to the perimeter of the editor screen area
+
+                            sprite_rect.center = (sprite_rect.x, sprite_rect.y)
 
                             MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
                                                             image_surface=MiPiSettings.sprite_image,
