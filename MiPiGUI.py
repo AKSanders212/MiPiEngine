@@ -47,6 +47,6 @@ class GUI:
     @classmethod
     def EditorScreen(cls):
         editorscreen.fill(Render.WHITE)
-        pygame.draw.rect(editorscreen, Render.WHITE, (screensize))
+        pygame.draw.rect(editorscreen, Render.WHITE, screensize)
         MiPi.enginescreen.blit(editorscreen, (50,185))
 

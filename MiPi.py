@@ -70,6 +70,11 @@ class MiPi:
         speed = 5
         pos_x = 0
         pos_y = 0
+        editableContent = False
+        edMouseX = 0
+        edMouseY = 0
+        inputx = 0
+        inputy = 0
 
         Render.Shapes.CreateTriangle()
 
@@ -82,6 +87,10 @@ class MiPi:
                 MiPiGUI.GUI.EditorScreen()
                 # MiPiGUI Labels
                 enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
+                edMouseX, edMouseY = pygame.mouse.get_pos()
+
+                if event.type == pygame.MOUSEMOTION:
+                    print("X: %d, Y: %d" % (edMouseX, edMouseY))
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
@@ -97,11 +106,9 @@ class MiPi:
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                         if event.text == "Run":
-                            print(current_date, "Gameplay test window has been launched!")
+                            print(current_date, "Gamescreen window has been launched!")
                             engine_running = False
                             game_running = True
-                        if event.text != "Run" or event.text != "Import Sprite" and engine_running:
-                            print(current_date, "Window failed to open")
                         if event.text == "Close":
                             print(current_date, "Application has been closed")
                             engine_running = False
@@ -114,6 +121,7 @@ class MiPi:
                                 manager=MiPiGUI.mainframe, window_title="Select a sprite file",
                                 initial_file_path="D:/dev/pythondev/MiPiEngine/MiPiEngine",
                                 allow_existing_files_only=True, visible=True)
+                            MiPiSettings.editableSprite = True
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED:
@@ -140,12 +148,23 @@ class MiPi:
                             if scalability:
                                 MiPiSettings.sprite_image = pygame.transform.smoothscale(MiPiSettings.sprite_image,
                                                                                          sprite_rect.size)
-                            # Make these values editable in a gui by the user
-                            sprite_rect.x = 120
-                            sprite_rect.y = 375
 
-                            # Create an if statement to check for boundaries of tilemaps/bgs and sprites
-                            # Make sure the boundaries are set to the perimeter of the editor screen area
+                            # Boundary values are subject to change based on image size and scaling!
+                            # Make these values editable in a gui by the user: x range: 80-400
+                            # y range: 215-425  Best default: 80,425
+                            x = int(input("Enter an x value between 80-400: "))
+                            y = int(input("Enter a y value between 215-425: "))
+
+                            sprite_rect.x = x
+                            sprite_rect.y = y
+
+                            if sprite_rect.x < 80 or sprite_rect.x > 400:
+                                print("Value out of range! Setting to default")
+                                sprite_rect.x = 80
+
+                            if sprite_rect.y < 215 or sprite_rect.y > 425:
+                                print("Value out of range! Setting to default")
+                                sprite_rect.y = 425
 
                             sprite_rect.center = (sprite_rect.x, sprite_rect.y)
 
@@ -231,9 +250,9 @@ class MiPi:
     @classmethod
     def LoadSprite(cls, x, y):
         try:
-            testsprite = MiPiSettings.sprite_image
-            gamescreen.blit(testsprite, (x, y))
-            if testsprite is None:
+            loadsprite = MiPiSettings.sprite_image
+            gamescreen.blit(loadsprite, (x, y))
+            if loadsprite is None:
                 print(editor_error)
         except IOError as e:
             pass
