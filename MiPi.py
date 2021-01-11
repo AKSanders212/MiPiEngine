@@ -85,12 +85,15 @@ class MiPi:
 
                 enginescreen.fill(Render.LIGHTCOLOR)
                 MiPiGUI.GUI.EditorScreen()
+                # edMouseX, edMouseY = pygame.mouse.get_pos()
                 # MiPiGUI Labels
                 enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
-                edMouseX, edMouseY = pygame.mouse.get_pos()
+                enginescreen.blit(MiPiGUI.spritelocationlabel, MiPiGUI.spriteborder)
+                enginescreen.blit(MiPiGUI.xlabel, MiPiGUI.xborder)
+                enginescreen.blit(MiPiGUI.ylabel, MiPiGUI.yborder)
 
-                if event.type == pygame.MOUSEMOTION:
-                    print("X: %d, Y: %d" % (edMouseX, edMouseY))
+                # if event.type == pygame.MOUSEMOTION:
+                # print("X: %d, Y: %d" % (edMouseX, edMouseY))
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
@@ -152,8 +155,10 @@ class MiPi:
                             # Boundary values are subject to change based on image size and scaling!
                             # Make these values editable in a gui by the user: x range: 80-400
                             # y range: 215-425  Best default: 80,425
-                            x = int(input("Enter an x value between 80-400: "))
-                            y = int(input("Enter a y value between 215-425: "))
+                            inputx = 80
+                            inputy = 215
+                            x = inputx
+                            y = inputy
 
                             sprite_rect.x = x
                             sprite_rect.y = y
