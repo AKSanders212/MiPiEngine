@@ -55,6 +55,12 @@ game_title = "Gamescreen"
 # Custom logging levels:
 editor_error = ': The editor has no content to pass to the game screen!'
 
+# File paths
+# D:/dev/pythondev/MiPiEngine/MiPiEngine
+
+warning = ('I appologize for the inconvenience, but this engine only works on Windows! Also, make sure all'
+           ' of your assets used are in C:/ drive. I havent found a workaround for this...')
+
 
 # ---------------------------------------------------------------------------------------------------------#
 
@@ -122,7 +128,7 @@ class MiPi:
                             spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
                                 rect=pygame.Rect((200, 200), (260, 300)),
                                 manager=MiPiGUI.mainframe, window_title="Select a sprite file",
-                                initial_file_path="D:/dev/pythondev/MiPiEngine/MiPiEngine",
+                                initial_file_path="C:/",
                                 allow_existing_files_only=True, visible=True)
                             MiPiSettings.editableSprite = True
 
@@ -265,6 +271,7 @@ class MiPi:
     @staticmethod
     def EngineInit():
         # This method is called upon starting the MiPi engine
+        print(warning)
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
         print(current_date, ": MiPi Engine v1.0 has been initialized")
         logging.info(current_date)

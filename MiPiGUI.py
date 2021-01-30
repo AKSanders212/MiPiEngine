@@ -3,6 +3,7 @@ from pygame import *
 import pygame_gui
 from pygame_gui import *
 from pygame_gui.elements.ui_text_entry_line import UITextEntryLine
+from pygame_gui.elements.ui_horizontal_slider import UIHorizontalSlider
 import Render
 from Render import *
 import math
@@ -17,10 +18,10 @@ mainframe = pygame_gui.UIManager((800, 625))
 play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 25), (100, 50)),
                                            text='Test Game', manager=mainframe)
 
-enterx_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 220), (100, 50)),
+enterx_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 230), (100, 25)),
                                            text='Enter X', manager=mainframe)
 
-entery_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 220), (100, 50)),
+entery_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 230), (100, 25)),
                                            text='Enter Y', manager=mainframe)
 
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((20, 25), (400, 50)), starting_option=
@@ -54,13 +55,22 @@ xlabel = smallfont.render('X Value', True, Render.WHITE, Render.DARKSHADE)
 xborder = xlabel.get_rect()
 xborder.center = (500, 165)
 
-ylabel = smallfont.render('X Value', True, Render.WHITE, Render.DARKSHADE)
+ylabel = smallfont.render('Y Value', True, Render.WHITE, Render.DARKSHADE)
 yborder = ylabel.get_rect()
 yborder.center = (600, 165)
 
 # Creating the text input box
-text_input_x = UITextEntryLine(relative_rect=Rect(450, 185, 100, 100), manager=mainframe)
-text_input_y = UITextEntryLine(relative_rect=Rect(550, 185, 100, 100), manager=mainframe)
+#text_input_x = UITextEntryLine(relative_rect=Rect(450, 185, 100, 100), manager=mainframe)
+#text_input_y = UITextEntryLine(relative_rect=Rect(550, 185, 100, 100), manager=mainframe)
+
+# Create the x and y horizontal float sliders
+xlocbar = UIHorizontalSlider(relative_rect=pygame.Rect(450, 205, 100, 20), start_value=80,
+                             value_range=(80, 400),
+                             manager=mainframe)
+
+ylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 205, 100, 20), start_value=215,
+                             value_range=(215, 425),
+                             manager=mainframe)
 
 
 class GUI:
@@ -70,7 +80,8 @@ class GUI:
 
     @classmethod
     def EditorScreen(cls):
-        editorscreen.fill(Render.WHITE)
-        pygame.draw.rect(editorscreen, Render.WHITE, screensize)
+        pygame.draw.rect(editorscreen, Render.BLUE, screensize)
+        editorscreen.fill(Render.BLUE)
         MiPi.enginescreen.blit(editorscreen, (50, 185))
+
 
