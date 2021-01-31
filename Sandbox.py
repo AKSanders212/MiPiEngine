@@ -6,7 +6,7 @@ import MiPi
 
 
 def main():
-    # Window initialization
+    # Primary engine methods
     MiPi.MiPi.EngineInit()
     MiPi.MiPi.Main()
 

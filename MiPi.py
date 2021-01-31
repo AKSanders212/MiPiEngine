@@ -46,6 +46,7 @@ enginescreen = pygame.display.set_mode((ewidth, eheight))
 # Main engine variables and constants
 sysclock = pygame.time.Clock()
 mainFPS = 110
+delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
 engine_title = "MiPi Engine"
 pygame.display.set_caption(engine_title)
@@ -59,7 +60,11 @@ editor_error = ': The editor has no content to pass to the game screen!'
 # D:/dev/pythondev/MiPiEngine/MiPiEngine
 
 warning = ('I appologize for the inconvenience, but this engine only works on Windows! Also, make sure all'
-           ' of your assets used are in C:/ drive. I havent found a workaround for this...')
+           ' of your assets used are in C:/ drive. I currently have no workaround for this...')
+
+# Get slider values
+getspritex = None
+getspritey = None
 
 
 # ---------------------------------------------------------------------------------------------------------#
@@ -70,7 +75,6 @@ class MiPi:
 
     @classmethod
     def Main(cls):
-        delta_time = sysclock.tick(mainFPS) / 1000.0
         game_running = False
         engine_running = True
         speed = 5
@@ -91,12 +95,33 @@ class MiPi:
 
                 enginescreen.fill(Render.LIGHTCOLOR)
                 MiPiGUI.GUI.EditorScreen()
+
                 # edMouseX, edMouseY = pygame.mouse.get_pos()
                 # MiPiGUI Labels
                 enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
                 enginescreen.blit(MiPiGUI.spritelocationlabel, MiPiGUI.spriteborder)
                 enginescreen.blit(MiPiGUI.xlabel, MiPiGUI.xborder)
                 enginescreen.blit(MiPiGUI.ylabel, MiPiGUI.yborder)
+
+                spritexlabel = MiPiGUI.smallfont.render(MiPiGUI.textx, True, Render.WHITE, Render.DARKSHADE)
+                spritexborder = spritexlabel.get_rect()
+                spritexborder.center = (500, 185)
+                enginescreen.blit(spritexlabel, spritexborder)
+
+                spriteylabel = MiPiGUI.smallfont.render(MiPiGUI.texty, True, Render.WHITE, Render.DARKSHADE)
+                spriteyborder = spriteylabel.get_rect()
+                spriteyborder.center = (600, 185)
+                enginescreen.blit(spriteylabel, spriteyborder)
+
+                # UI Horizontal sliders
+                MiPiGUI.xlocbar.enable()
+                MiPiGUI.ylocbar.enable()
+
+                # Get current slider values
+                getspritex = MiPiGUI.xlocbar.get_current_value()
+                getspritey = MiPiGUI.ylocbar.get_current_value()
+                MiPiGUI.textx = str(getspritex)
+                MiPiGUI.texty = str(getspritey)
 
                 # if event.type == pygame.MOUSEMOTION:
                 # print("X: %d, Y: %d" % (edMouseX, edMouseY))
@@ -166,6 +191,15 @@ class MiPi:
                             x = inputx
                             y = inputy
 
+                            # Get current slider values
+                            getspritex = MiPiGUI.xlocbar.get_current_value()
+                            getspritey = MiPiGUI.ylocbar.get_current_value()
+                            MiPiGUI.textx = str(getspritex)
+                            MiPiGUI.texty = str(getspritey)
+
+                            x = getspritex
+                            y = getspritey
+
                             sprite_rect.x = x
                             sprite_rect.y = y
 
@@ -179,6 +213,9 @@ class MiPi:
 
                             sprite_rect.center = (sprite_rect.x, sprite_rect.y)
 
+                            # UI manager mainframe has now been created after pygame.init()
+                            # Thank you MyreMylar(pygame_gui) for your help in spotting this :)
+                            # Currently see line 14 of MiPiGUI file for pygame.init()
                             MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
                                                             image_surface=MiPiSettings.sprite_image,
                                                             manager=MiPiGUI.mainframe)
@@ -192,12 +229,18 @@ class MiPi:
                     if event.key == pygame.K_ESCAPE:
                         engine_running = False
 
+                # Updates: Tried de-indenting MiPiGUI updates, but this caused instability in all
+                # looped events including gui elements. Also tried setting updates in a method, but
+                # this caused pygame.event to throw an error. So instead, I indented pygame display
+                # updates and everything seems to still work correctly. Will keep an eye on updates.
+                # I did notice that de-indenting update methods will put them outside the main engine's
+                # while loop. For now, just gonna keep them in the while loop unless I can find a
+                # workaround.
                 MiPiGUI.mainframe.process_events(event)
                 MiPiGUI.mainframe.draw_ui(enginescreen)
                 MiPiGUI.mainframe.update(delta_time)
-
-            pygame.display.flip()
-            pygame.display.update()
+                pygame.display.flip()
+                pygame.display.update()
 
         while game_running:
             for game in pygame.event.get():
@@ -245,7 +288,7 @@ class MiPi:
                 # MiPi.RenderTest(pos_x, pos_y)
                 MiPi.LoadSprite(pos_x, pos_y)
                 # The below is commented out, because UI is NOT being drawn to the game screen.
-                # If you decide to add pygame_gui UI widgets, then please use these!
+                # If you decide to add pygame_gui UI elements, then please use these!
                 # mainframe.process_events(game)
                 # mainframe.update(delta_time)
                 sysclock.tick(mainFPS)
