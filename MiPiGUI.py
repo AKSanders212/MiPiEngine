@@ -21,10 +21,15 @@ mainframe = pygame_gui.UIManager((800, 625))
 play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 25), (100, 50)),
                                            text='Test Game', manager=mainframe)
 
+updatespr_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((490, 230), (130, 50)),
+                                           text='Update Location', visible=0, manager=mainframe)
+
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((20, 25), (400, 50)), starting_option=
 "File", options_list=["Run", "Import Sprite", "Close"], manager=mainframe)
 
 import_sprite = None
+base_sprite = None
+base_sprimg = None
 
 # Max dimmensions for the game screen - Make sure that no sprite will be bigger than 1/3 of the overall screen size.
 g_screen_x = 800
@@ -66,11 +71,11 @@ yborder.center = (600, 165)
 
 # Create the x and y horizontal float sliders
 xlocbar = UIHorizontalSlider(relative_rect=pygame.Rect(450, 205, 100, 20), start_value=80,
-                             value_range=(80, 400),
+                             value_range=(80, 400), visible=0,
                              manager=mainframe)
 
 ylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 205, 100, 20), start_value=215,
-                             value_range=(215, 425),
+                             value_range=(215, 425), visible=0,
                              manager=mainframe)
 
 

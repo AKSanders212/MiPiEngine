@@ -16,6 +16,7 @@ LIGHTCOLOR = (170, 170, 170)
 DARKSHADE = (80, 80, 80)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
+TRANSPARENCY = (0, 0, 0, 0)
 
 class Shapes:
     def __init__(self):

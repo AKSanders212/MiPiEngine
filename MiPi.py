@@ -28,6 +28,7 @@ guitext = CorbelFont.render('File', True, Render.WHITE)
 # Vertices, vertexes and sizes
 verts = [(50, 0), (100, 50), (50, 50), (0, 50)]
 size = (800, 625)
+current_version = "alpha v0.1"
 
 # Creating the dimensions for the game play screen
 width = 800
@@ -36,6 +37,9 @@ height = 625
 # Creating the dimensions for the main engine frame
 ewidth = 800
 eheight = 625
+
+# Message to be displayed when something isn't finished yet
+inprogress = 'This feature is still in development'
 
 # Datetime vars
 current_date = datetime.datetime.now()
@@ -48,7 +52,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine"
+engine_title = "MiPi Engine alpha v0.1 By Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -98,30 +102,38 @@ class MiPi:
 
                 # edMouseX, edMouseY = pygame.mouse.get_pos()
                 # MiPiGUI Labels
-                enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
-                enginescreen.blit(MiPiGUI.spritelocationlabel, MiPiGUI.spriteborder)
-                enginescreen.blit(MiPiGUI.xlabel, MiPiGUI.xborder)
-                enginescreen.blit(MiPiGUI.ylabel, MiPiGUI.yborder)
 
-                spritexlabel = MiPiGUI.smallfont.render(MiPiGUI.textx, True, Render.WHITE, Render.DARKSHADE)
-                spritexborder = spritexlabel.get_rect()
-                spritexborder.center = (500, 185)
-                enginescreen.blit(spritexlabel, spritexborder)
+                if MiPiSettings.editableSprite:
+                    enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
+                    enginescreen.blit(MiPiGUI.spritelocationlabel, MiPiGUI.spriteborder)
+                    enginescreen.blit(MiPiGUI.xlabel, MiPiGUI.xborder)
+                    enginescreen.blit(MiPiGUI.ylabel, MiPiGUI.yborder)
 
-                spriteylabel = MiPiGUI.smallfont.render(MiPiGUI.texty, True, Render.WHITE, Render.DARKSHADE)
-                spriteyborder = spriteylabel.get_rect()
-                spriteyborder.center = (600, 185)
-                enginescreen.blit(spriteylabel, spriteyborder)
+                    spritexlabel = MiPiGUI.smallfont.render(MiPiGUI.textx, True, Render.WHITE, Render.DARKSHADE)
+                    spritexborder = spritexlabel.get_rect()
+                    spritexborder.center = (500, 185)
+                    enginescreen.blit(spritexlabel, spritexborder)
 
-                # UI Horizontal sliders
-                MiPiGUI.xlocbar.enable()
-                MiPiGUI.ylocbar.enable()
+                    spriteylabel = MiPiGUI.smallfont.render(MiPiGUI.texty, True, Render.WHITE, Render.DARKSHADE)
+                    spriteyborder = spriteylabel.get_rect()
+                    spriteyborder.center = (600, 185)
+                    enginescreen.blit(spriteylabel, spriteyborder)
 
-                # Get current slider values
-                getspritex = MiPiGUI.xlocbar.get_current_value()
-                getspritey = MiPiGUI.ylocbar.get_current_value()
-                MiPiGUI.textx = str(getspritex)
-                MiPiGUI.texty = str(getspritey)
+                    # UI Horizontal sliders
+                    MiPiGUI.xlocbar.show()
+                    MiPiGUI.ylocbar.show()
+                    MiPiGUI.xlocbar.enable()
+                    MiPiGUI.ylocbar.enable()
+
+                    # UI Sprite Update Button enabled
+                    MiPiGUI.updatespr_button.show()
+                    MiPiGUI.updatespr_button.enable()
+
+                    # Get current slider values
+                    getspritex = MiPiGUI.xlocbar.get_current_value()
+                    getspritey = MiPiGUI.ylocbar.get_current_value()
+                    MiPiGUI.textx = str(getspritex)
+                    MiPiGUI.texty = str(getspritey)
 
                 # if event.type == pygame.MOUSEMOTION:
                 # print("X: %d, Y: %d" % (edMouseX, edMouseY))
@@ -147,14 +159,13 @@ class MiPi:
                             print(current_date, "Application has been closed")
                             engine_running = False
                             game_running = False
-                        else:
-                            print(current_date, "Application failed to close")
                         if event.text == "Import Sprite":
                             spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
                                 rect=pygame.Rect((200, 200), (260, 300)),
                                 manager=MiPiGUI.mainframe, window_title="Select a sprite file",
                                 initial_file_path="C:/",
                                 allow_existing_files_only=True, visible=True)
+
                             MiPiSettings.editableSprite = True
 
                 if event.type == pygame.USEREVENT:
@@ -163,6 +174,7 @@ class MiPi:
                             MiPiGUI.import_sprite.kill()
 
                         try:
+
                             MiPiSettings.sprite_path = create_resource_path(event.text)
                             MiPiSettings.sprite_image = pygame.image.load(MiPiSettings.sprite_path).convert_alpha()
                             sprite_rect = MiPiSettings.sprite_image.get_rect()
@@ -186,6 +198,7 @@ class MiPi:
                             # Boundary values are subject to change based on image size and scaling!
                             # Make these values editable in a gui by the user: x range: 80-400
                             # y range: 215-425  Best default: 80,425
+
                             inputx = 80
                             inputy = 215
                             x = inputx
@@ -196,6 +209,8 @@ class MiPi:
                             getspritey = MiPiGUI.ylocbar.get_current_value()
                             MiPiGUI.textx = str(getspritex)
                             MiPiGUI.texty = str(getspritey)
+                            MiPiGUI.xlocbar.update(delta_time)
+                            MiPiGUI.ylocbar.update(delta_time)
 
                             x = getspritex
                             y = getspritey
@@ -224,6 +239,30 @@ class MiPi:
 
                         except pygame.error:
                             pass
+
+                    if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
+                        if event.ui_element == MiPiGUI.updatespr_button:
+                            print(inprogress)
+                            """
+                                #MiPiGUI.base_sprimage.fill(Render.TRANSPARENCY)
+                                getspritex = MiPiGUI.xlocbar.get_current_value()
+                                getspritey = MiPiGUI.ylocbar.get_current_value()
+                                MiPiGUI.textx = str(getspritex)
+                                MiPiGUI.texty = str(getspritey)
+                                MiPiGUI.xlocbar.update(delta_time)
+                                MiPiGUI.ylocbar.update(delta_time)
+    
+                                x = getspritex
+                                y = getspritey
+    
+                                sprite_rect.x = x
+                                sprite_rect.y = y
+                                sprite_rect.center = (sprite_rect.x, sprite_rect.y)
+    
+                                MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
+                                                                image_surface=MiPiSettings.sprite_image,
+                                                                manager=MiPiGUI.mainframe)
+                            """
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE:
@@ -316,6 +355,6 @@ class MiPi:
         # This method is called upon starting the MiPi engine
         print(warning)
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
-        print(current_date, ": MiPi Engine v1.0 has been initialized")
+        print(current_date, ": MiPi Engine ", current_version, " has been initialized")
         logging.info(current_date)
-        logging.info("MiPi Engine v1.0 has been initialized.")
+        logging.info("MiPi Engine alpha v0.1 has been initialized")
