@@ -1,3 +1,5 @@
+# MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
+
 import pygame
 from pygame import *
 import MiPi
@@ -15,8 +17,9 @@ DARKGRAY = (169, 169, 169)
 LIGHTCOLOR = (170, 170, 170)
 DARKSHADE = (80, 80, 80)
 BLACK = (0, 0, 0)
-BLUE = (0, 0, 255)
+BLUE = (0, 150, 255)
 TRANSPARENCY = (0, 0, 0, 0)
+
 
 class Shapes:
     def __init__(self):

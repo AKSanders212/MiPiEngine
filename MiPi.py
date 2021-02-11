@@ -1,3 +1,5 @@
+# MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
+
 # This is my MiPi module, it will contain the MiPi class and all of its
 # Functions, methods and variables.
 
@@ -28,7 +30,6 @@ guitext = CorbelFont.render('File', True, Render.WHITE)
 # Vertices, vertexes and sizes
 verts = [(50, 0), (100, 50), (50, 50), (0, 50)]
 size = (800, 625)
-current_version = "alpha v0.1"
 
 # Creating the dimensions for the game play screen
 width = 800
@@ -52,7 +53,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine alpha v0.1 By Aaron Keith Sanders"
+engine_title = "MiPi Engine alpha v1.0 - © Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -82,8 +83,8 @@ class MiPi:
         game_running = False
         engine_running = True
         speed = 5
-        pos_x = 0
-        pos_y = 0
+        pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
+        pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
         editableContent = False
         edMouseX = 0
         edMouseY = 0
@@ -99,12 +100,12 @@ class MiPi:
 
                 enginescreen.fill(Render.LIGHTCOLOR)
                 MiPiGUI.GUI.EditorScreen()
+                enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
 
                 # edMouseX, edMouseY = pygame.mouse.get_pos()
                 # MiPiGUI Labels
 
                 if MiPiSettings.editableSprite:
-                    enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
                     enginescreen.blit(MiPiGUI.spritelocationlabel, MiPiGUI.spriteborder)
                     enginescreen.blit(MiPiGUI.xlabel, MiPiGUI.xborder)
                     enginescreen.blit(MiPiGUI.ylabel, MiPiGUI.yborder)
@@ -235,6 +236,13 @@ class MiPi:
                                                             image_surface=MiPiSettings.sprite_image,
                                                             manager=MiPiGUI.mainframe)
 
+                            MiPiSettings.spritex_to_editor = (sprite_rect.x / 400)
+                            MiPiSettings.spritey_to_editor = (sprite_rect.y / 425)
+                            pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
+                            pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
+                            pos_x = pos_x - MiPiSettings.offset_x
+                            pos_y = pos_y - MiPiSettings.offset_y
+
                             MiPiSettings.editor_has_content = True
 
                         except pygame.error:
@@ -243,26 +251,33 @@ class MiPi:
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
                         if event.ui_element == MiPiGUI.updatespr_button:
                             print(inprogress)
-                            """
-                                #MiPiGUI.base_sprimage.fill(Render.TRANSPARENCY)
-                                getspritex = MiPiGUI.xlocbar.get_current_value()
-                                getspritey = MiPiGUI.ylocbar.get_current_value()
-                                MiPiGUI.textx = str(getspritex)
-                                MiPiGUI.texty = str(getspritey)
-                                MiPiGUI.xlocbar.update(delta_time)
-                                MiPiGUI.ylocbar.update(delta_time)
-    
-                                x = getspritex
-                                y = getspritey
-    
-                                sprite_rect.x = x
-                                sprite_rect.y = y
-                                sprite_rect.center = (sprite_rect.x, sprite_rect.y)
-    
-                                MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
-                                                                image_surface=MiPiSettings.sprite_image,
-                                                                manager=MiPiGUI.mainframe)
-                            """
+                            MiPiGUI.import_sprite.hide()
+
+                    if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                        if event.ui_element == MiPiGUI.updatespr_button:
+                            change_rect = MiPiSettings.sprite_image.get_rect()
+                            movex = MiPiGUI.xlocbar.get_current_value()
+                            movey = MiPiGUI.ylocbar.get_current_value()
+                            change_rect.x = movex
+                            change_rect.y = movey
+                            change_rect.center = (change_rect.x, change_rect.y)
+                            MiPiGUI.import_sprite = UIImage(relative_rect=change_rect,
+                                                            image_surface=MiPiSettings.sprite_image,
+                                                            manager=MiPiGUI.mainframe)
+
+                            MiPiSettings.spritex_to_editor = (change_rect.x / 400)
+                            MiPiSettings.spritey_to_editor = (change_rect.y / 425)
+                            pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
+                            pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
+                            pos_x = pos_x - MiPiSettings.offset_x
+                            pos_y = pos_y - MiPiSettings.offset_y
+
+                            getspritex = MiPiGUI.xlocbar.get_current_value()
+                            getspritey = MiPiGUI.ylocbar.get_current_value()
+                            MiPiGUI.textx = str(getspritex)
+                            MiPiGUI.texty = str(getspritey)
+                            MiPiGUI.xlocbar.update(delta_time)
+                            MiPiGUI.ylocbar.update(delta_time)
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE:
@@ -355,6 +370,6 @@ class MiPi:
         # This method is called upon starting the MiPi engine
         print(warning)
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
-        print(current_date, ": MiPi Engine ", current_version, " has been initialized")
+        print(current_date, ": MiPi Engine ", MiPiSettings.current_version, " has been initialized")
         logging.info(current_date)
-        logging.info("MiPi Engine alpha v0.1 has been initialized")
+        logging.info("MiPi Engine alpha v1.0 has been initialized")
