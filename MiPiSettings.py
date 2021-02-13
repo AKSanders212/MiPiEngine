@@ -12,6 +12,10 @@ spritex_to_editor = 0
 spritey_to_editor = 0
 offset_x = 96
 offset_y = 260.2941176470588
+platform_error = 'Your OS could not be detected!'
+Windows = 'Windows'
+Linux = 'Linux'
+Mac = 'Darwin'
 
 
 class Settings:

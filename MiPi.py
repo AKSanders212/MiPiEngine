@@ -19,6 +19,7 @@ import MiPiGUI
 from MiPiGUI import *
 import MiPiSettings
 from MiPiSettings import *
+import platform
 
 # Initialize pygame
 pygame.init()
@@ -64,8 +65,6 @@ editor_error = ': The editor has no content to pass to the game screen!'
 # File paths
 # D:/dev/pythondev/MiPiEngine/MiPiEngine
 
-warning = ('I appologize for the inconvenience, but this engine only works on Windows! Also, make sure all'
-           ' of your assets used are in C:/ drive. I currently have no workaround for this...')
 
 # Get slider values
 getspritex = None
@@ -161,11 +160,27 @@ class MiPi:
                             engine_running = False
                             game_running = False
                         if event.text == "Import Sprite":
-                            spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
-                                rect=pygame.Rect((200, 200), (260, 300)),
-                                manager=MiPiGUI.mainframe, window_title="Select a sprite file",
-                                initial_file_path="C:/",
-                                allow_existing_files_only=True, visible=True)
+                            if platform.system() == MiPiSettings.Windows:
+                                spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                    rect=pygame.Rect((200, 200), (260, 300)),
+                                    manager=MiPiGUI.mainframe, window_title="Select a sprite file",
+                                    initial_file_path="C:/",
+                                    allow_existing_files_only=True, visible=True)
+                            elif platform.system() == MiPiSettings.Mac:
+                                spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                    rect=pygame.Rect((200, 200), (260, 300)),
+                                    manager=MiPiGUI.mainframe, window_title="Select a sprite file",
+                                    initial_file_path="~/Desktop",
+                                    allow_existing_files_only=True, visible=True)
+                            elif platform.system() == MiPiSettings.Linux:
+                                spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                    rect=pygame.Rect((200, 200), (260, 300)),
+                                    manager=MiPiGUI.mainframe, window_title="Select a sprite file",
+                                    initial_file_path="/bin",
+                                    allow_existing_files_only=True, visible=True)
+                            else:
+                                print(current_date, MiPiSettings.platform_error)
+                                logging.warning(current_date, MiPiSettings.platform_error)
 
                             MiPiSettings.editableSprite = True
 
@@ -305,21 +320,43 @@ class MiPi:
 
                 gamescreen.fill(Render.BLUE)
 
+                if pos_x > MiPiGUI.g_screen_x - 1:
+                    pos_x = 0
+                elif pos_x < 0:
+                    pos_x = MiPiGUI.g_screen_x
+
+                if pos_y > MiPiGUI.g_screen_y - 1:
+                    pos_y = 0
+                elif pos_y < 0:
+                    pos_y = MiPiGUI.g_screen_y
+
                 pygame.key.set_repeat(1, 10)  # Not a friendly way of movement while key is held down, but works!
                 # Movement loop
                 if game.type == pygame.KEYDOWN:
                     if game.key == pygame.K_LEFT:
                         pos_x -= speed
-                        print("Left key pressed")
+                        print("(<) Left key pressed")
                     if game.key == pygame.K_RIGHT:
                         pos_x += speed
-                        print("Right key pressed")
+                        print("(>) Right key pressed")
                     if game.key == pygame.K_UP:
                         pos_y -= speed
-                        print("Up key pressed")
+                        print("(^) Up key pressed")
                     if game.key == pygame.K_DOWN:
                         pos_y += speed
-                        print("Down key pressed")
+                        print("(v)Down key pressed")
+                    if game.key == pygame.K_a:
+                        pos_x -= speed
+                        print("(a) Left key pressed")
+                    if game.key == pygame.K_d:
+                        pos_x += speed
+                        print("(d) Right key pressed")
+                    if game.key == pygame.K_w:
+                        pos_y -= speed
+                        print("(w) Up key pressed")
+                    if game.key == pygame.K_s:
+                        pos_y += speed
+                        print("(s) Down key pressed")
                 elif game.type == pygame.KEYUP:
                     if game.key == pygame.K_LEFT:
                         pos_x -= 0
@@ -368,8 +405,15 @@ class MiPi:
     @staticmethod
     def EngineInit():
         # This method is called upon starting the MiPi engine
-        print(warning)
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
         print(current_date, ": MiPi Engine ", MiPiSettings.current_version, " has been initialized")
+        if platform.system() == MiPiSettings.Windows:
+            print('Operating system: Windows detected - Engine running')
+        elif platform.system() == MiPiSettings.Mac:
+            print('Operating system: MacOS detected - Engine running')
+        elif platform.system() == MiPiSettings.Linux:
+            print('Operating system: Linux detected - Engine running')
+        else:
+            print('Operating system unknown - Engine running (unexpected results may occur!)')
         logging.info(current_date)
         logging.info("MiPi Engine alpha v1.0 has been initialized")
