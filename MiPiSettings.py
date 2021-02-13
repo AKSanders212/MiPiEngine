@@ -1,7 +1,7 @@
 # MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
 
 # Mipi variables
-current_version = "alpha v1.0"
+current_version = "alpha v1.1"
 editor_has_content = False
 sprite_image = None
 sprite_path = None

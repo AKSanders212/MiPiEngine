@@ -54,7 +54,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine alpha v1.0 - © Aaron Keith Sanders"
+engine_title = "MiPi Engine alpha v1.1 - © Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -416,4 +416,4 @@ class MiPi:
         else:
             print('Operating system unknown - Engine running (unexpected results may occur!)')
         logging.info(current_date)
-        logging.info("MiPi Engine alpha v1.0 has been initialized")
+        logging.info("MiPi Engine alpha v1.1 has been initialized")
