@@ -4,6 +4,7 @@ import pygame
 from pygame import *
 import MiPi
 from MiPi import *
+import MiPiSettings
 
 pygame.init()
 size = (800, 625)
@@ -30,3 +31,9 @@ class Shapes:
         verts = [(50, 0), (100, 50), (50, 50), (0, 50)]
         triangle.fill(DARKGRAY)
         pygame.draw.polygon(triangle, GREEN, verts)
+
+
+
+
+
+

@@ -4,6 +4,7 @@ import pygame_gui
 from pygame_gui import *
 from pygame_gui.elements.ui_text_entry_line import UITextEntryLine
 from pygame_gui.elements.ui_horizontal_slider import UIHorizontalSlider
+from pygame_gui.core.drawable_shapes.rect_drawable_shape import RectDrawableShape
 import Render
 from Render import *
 import math
@@ -18,13 +19,13 @@ pygame.init()
 mainframe = pygame_gui.UIManager((800, 625))
 
 # Pygame_gui UI elements
-play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 25), (100, 50)),
+play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 35), (90, 50)),
                                            text='Test Game', manager=mainframe)
 
 updatespr_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 230), (130, 50)),
                                                 text='Update Location', visible=0, manager=mainframe)
 
-dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((20, 25), (400, 50)), starting_option=
+dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((35, 35), (150, 50)), starting_option=
 "File", options_list=["Run", "Import Sprite", "Close"], manager=mainframe)
 
 import_sprite = None
@@ -41,7 +42,7 @@ screensize = (200, 156, 200, 156)
 editorscreen = pygame.Surface(size)
 
 edx = 100
-edy = 165
+edy = 155
 
 # Get the string value of the x and y sprite sliders
 textx = ''
@@ -65,6 +66,22 @@ ylabel = smallfont.render('Y Value', True, Render.WHITE, Render.DARKSHADE)
 yborder = ylabel.get_rect()
 yborder.center = (600, 165)
 
+engineborder_width = 800
+engineborder_height = 10
+enginebordersize = (engineborder_width, engineborder_height, engineborder_width, engineborder_height)
+
+engineborder_north = smallfont.render('============================================================================'
+                                      '============================================================================'
+                                      '==========================', True, Render.DARKSHADE, Render.DARKSHADE)
+set_engineborder_north = engineborder_north.get_rect()
+set_engineborder_north.center = (0, 9)
+
+engineborder_south = smallfont.render('============================================================================'
+                                      '============================================================================'
+                                      '==========================', True, Render.DARKSHADE, Render.DARKSHADE)
+set_engineborder_south = engineborder_south.get_rect()
+set_engineborder_south.center = (0, 617)
+
 # Create the x and y horizontal float sliders
 xlocbar = UIHorizontalSlider(relative_rect=pygame.Rect(450, 205, 100, 20), start_value=80,
                              value_range=(80, 400), visible=0,
@@ -74,11 +91,14 @@ ylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 205, 100, 20), start
                              value_range=(215, 425), visible=0,
                              manager=mainframe)
 
-
 class GUI:
 
     def __init__(self):
         pass
+
+    @classmethod
+    def MiPiBorders(cls, surface, color, x, y, width, height, borderwidth):
+        pygame.draw.lines(surface, color, True, [(x, y), (x + width, y), (x + width, y + height), (x, y + height)], borderwidth)
 
     @classmethod
     def EditorScreen(cls):

@@ -1,4 +1,4 @@
-# MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
+# MiPi Engine alpha v1.1 - © Aaron Keith Sanders - All Rights Reserved
 
 # This is my MiPi module, it will contain the MiPi class and all of its
 # Functions, methods and variables.
@@ -20,6 +20,8 @@ from MiPiGUI import *
 import MiPiSettings
 from MiPiSettings import *
 import platform
+import os
+import random
 
 # Initialize pygame
 pygame.init()
@@ -54,7 +56,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine alpha v1.1 - © Aaron Keith Sanders"
+engine_title = "MiPi Engine alpha v1.2 - © Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -70,6 +72,9 @@ editor_error = ': The editor has no content to pass to the game screen!'
 getspritex = None
 getspritey = None
 
+e_moverandx = 0
+e_moverandy = 0
+
 
 # ---------------------------------------------------------------------------------------------------------#
 
@@ -84,6 +89,10 @@ class MiPi:
         speed = 5
         pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
         pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
+        MiPiSettings.enemy_x = 800 / 2
+        MiPiSettings.enemy_y = 600 / 2
+        e_moverandx = 0
+        e_moverandy = 0
         editableContent = False
         edMouseX = 0
         edMouseY = 0
@@ -99,7 +108,10 @@ class MiPi:
 
                 enginescreen.fill(Render.LIGHTCOLOR)
                 MiPiGUI.GUI.EditorScreen()
+                MiPiGUI.GUI.MiPiBorders(enginescreen, Render.DARKSHADE, 45, 176, 385, 292, 15)
                 enginescreen.blit(MiPiGUI.editorlabel, MiPiGUI.editorborder)
+                enginescreen.blit(MiPiGUI.engineborder_north, MiPiGUI.set_engineborder_north)
+                enginescreen.blit(MiPiGUI.engineborder_south, MiPiGUI.set_engineborder_south)
 
                 # edMouseX, edMouseY = pygame.mouse.get_pos()
                 # MiPiGUI Labels
@@ -320,6 +332,7 @@ class MiPi:
 
                 gamescreen.fill(Render.BLUE)
 
+                # Player movement boundaries
                 if pos_x > MiPiGUI.g_screen_x - 1:
                     pos_x = 0
                 elif pos_x < 0:
@@ -329,6 +342,32 @@ class MiPi:
                     pos_y = 0
                 elif pos_y < 0:
                     pos_y = MiPiGUI.g_screen_y
+
+                # Enemy movement boundaries
+                if MiPiSettings.enemy_x > MiPiGUI.g_screen_x - 1:
+                    MiPiSettings.enemy_x  = 0
+                elif MiPiSettings.enemy_x  < 0:
+                    MiPiSettings.enemy_x  = MiPiGUI.g_screen_x
+
+                if MiPiSettings.enemy_y  > MiPiGUI.g_screen_y - 1:
+                    MiPiSettings.enemy_y = 0
+                elif MiPiSettings.enemy_y < 0:
+                    MiPiSettings.enemy_y = MiPiGUI.g_screen_y
+
+                MiPiSettings.enemy_speed = 10
+
+                e_moverandx = random.randint(1, 3)
+                e_moverandy = random.randint(4, 6)
+
+                if 1 <= e_moverandx <= 2:
+                    MiPiSettings.enemy_x -= MiPiSettings.enemy_speed
+                elif e_moverandx == 3:
+                    MiPiSettings.enemy_x += MiPiSettings.enemy_speed
+
+                if 4 <= e_moverandy <= 5:
+                    MiPiSettings.enemy_y -= MiPiSettings.enemy_speed
+                elif e_moverandy == 6:
+                    MiPiSettings.enemy_y += MiPiSettings.enemy_speed
 
                 pygame.key.set_repeat(1, 10)  # Not a friendly way of movement while key is held down, but works!
                 # Movement loop
@@ -378,10 +417,13 @@ class MiPi:
                 pygame.display.set_caption(game_title)
                 # MiPi.RenderTest(pos_x, pos_y)
                 MiPi.LoadSprite(pos_x, pos_y)
+                MiPi.LoadEnemy(MiPiSettings.enemy_x, MiPiSettings.enemy_y)
+
                 # The below is commented out, because UI is NOT being drawn to the game screen.
                 # If you decide to add pygame_gui UI elements, then please use these!
                 # mainframe.process_events(game)
                 # mainframe.update(delta_time)
+
                 sysclock.tick(mainFPS)
                 pygame.display.flip()
                 pygame.display.update()
@@ -402,6 +444,20 @@ class MiPi:
         except IOError as e:
             pass
 
+    @classmethod
+    def LoadEnemy(cls, x, y):
+        try:
+            # This is just for testing purposes: These test assets are just for TESTING my engine!
+            # Remove any test assets before a serious beta or release build!!!
+            MiPiSettings.enemy_image = pygame.image.load(
+                os.path.join('D:/dev/assets/thirdparty/graphics/sprites', 'Goomba.gif'))
+            loadenemy = MiPiSettings.enemy_image
+            gamescreen.blit(loadenemy, (x, y))
+            if loadenemy is None:
+                print(MiPiSettings.enemy_error)
+        except IOError as e:
+            pass
+
     @staticmethod
     def EngineInit():
         # This method is called upon starting the MiPi engine
@@ -414,6 +470,6 @@ class MiPi:
         elif platform.system() == MiPiSettings.Linux:
             print('Operating system: Linux detected - Engine running')
         else:
-            print('Operating system unknown - Engine running (unexpected results may occur!)')
+            print('Operating system: unknown - Engine running (unexpected results may occur!)')
         logging.info(current_date)
-        logging.info("MiPi Engine alpha v1.1 has been initialized")
+        logging.info("MiPi Engine alpha v1.2 has been initialized")
