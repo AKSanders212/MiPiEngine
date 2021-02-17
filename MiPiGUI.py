@@ -15,8 +15,12 @@ from MiPi import *
 # Initialize pygame
 pygame.init()
 
+# The resolution size of the engine frame
+UIlimitwidth = 800
+UIlimitheight = 625
+
 # Global vars
-mainframe = pygame_gui.UIManager((800, 625))
+mainframe = pygame_gui.UIManager((UIlimitwidth, UIlimitheight))
 
 # Pygame_gui UI elements
 play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 35), (90, 50)),
@@ -91,6 +95,7 @@ ylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 205, 100, 20), start
                              value_range=(215, 425), visible=0,
                              manager=mainframe)
 
+
 class GUI:
 
     def __init__(self):
@@ -98,7 +103,8 @@ class GUI:
 
     @classmethod
     def MiPiBorders(cls, surface, color, x, y, width, height, borderwidth):
-        pygame.draw.lines(surface, color, True, [(x, y), (x + width, y), (x + width, y + height), (x, y + height)], borderwidth)
+        pygame.draw.lines(surface, color, True, [(x, y), (x + width, y), (x + width, y + height), (x, y + height)],
+                          borderwidth)
 
     @classmethod
     def EditorScreen(cls):

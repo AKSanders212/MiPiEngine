@@ -1,7 +1,8 @@
 # MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
 
+
 # Mipi variables
-current_version = "alpha v1.2"
+current_version = "alpha v1.2.1"
 editor_has_content = False
 sprite_image = None
 enemy_image = None
@@ -27,4 +28,4 @@ Mac = 'Darwin'
 class Settings:
 
     def __init__(self):
-        return self
+        pass

@@ -56,7 +56,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine alpha v1.2 - © Aaron Keith Sanders"
+engine_title = "MiPi Engine alpha v1.2.1 - © Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -75,12 +75,14 @@ getspritey = None
 e_moverandx = 0
 e_moverandy = 0
 
+configuresize = ''
+
 
 # ---------------------------------------------------------------------------------------------------------#
 
 class MiPi:
     def __init__(self):
-        self
+        pass
 
     @classmethod
     def Main(cls):
@@ -345,16 +347,14 @@ class MiPi:
 
                 # Enemy movement boundaries
                 if MiPiSettings.enemy_x > MiPiGUI.g_screen_x - 1:
-                    MiPiSettings.enemy_x  = 0
-                elif MiPiSettings.enemy_x  < 0:
-                    MiPiSettings.enemy_x  = MiPiGUI.g_screen_x
+                    MiPiSettings.enemy_x = 0
+                elif MiPiSettings.enemy_x < 0:
+                    MiPiSettings.enemy_x = MiPiGUI.g_screen_x
 
-                if MiPiSettings.enemy_y  > MiPiGUI.g_screen_y - 1:
+                if MiPiSettings.enemy_y > MiPiGUI.g_screen_y - 1:
                     MiPiSettings.enemy_y = 0
                 elif MiPiSettings.enemy_y < 0:
                     MiPiSettings.enemy_y = MiPiGUI.g_screen_y
-
-                MiPiSettings.enemy_speed = 10
 
                 e_moverandx = random.randint(1, 3)
                 e_moverandy = random.randint(4, 6)
@@ -450,7 +450,7 @@ class MiPi:
             # This is just for testing purposes: These test assets are just for TESTING my engine!
             # Remove any test assets before a serious beta or release build!!!
             MiPiSettings.enemy_image = pygame.image.load(
-                os.path.join('D:/dev/assets/thirdparty/graphics/sprites', 'Goomba.gif'))
+                os.path.join('D:/dev/assets/thirdparty/graphics/sprites', 'enemysprite.gif'))
             loadenemy = MiPiSettings.enemy_image
             gamescreen.blit(loadenemy, (x, y))
             if loadenemy is None:
@@ -458,8 +458,28 @@ class MiPi:
         except IOError as e:
             pass
 
+    @classmethod
+    def EnemySpeed(cls):
+        setspeed = input('Do you want a fast enemy or a slow enemy? Type either fast or slow: ')
+
+        if setspeed == 'fast':
+            MiPi.FastEnemy()
+        elif setspeed == 'slow':
+            MiPi.SlowEnemy()
+        else:
+            MiPi.FastEnemy()
+
+    @classmethod
+    def FastEnemy(cls):
+        MiPiSettings.enemy_speed = 10
+
+    @classmethod
+    def SlowEnemy(cls):
+        MiPiSettings.enemy_speed = 2
+
     @staticmethod
     def EngineInit():
+
         # This method is called upon starting the MiPi engine
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
         print(current_date, ": MiPi Engine ", MiPiSettings.current_version, " has been initialized")
@@ -472,4 +492,4 @@ class MiPi:
         else:
             print('Operating system: unknown - Engine running (unexpected results may occur!)')
         logging.info(current_date)
-        logging.info("MiPi Engine alpha v1.2 has been initialized")
+        logging.info("MiPi Engine alpha v1.2.1 has been initialized")
