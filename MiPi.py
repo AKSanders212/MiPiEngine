@@ -81,16 +81,18 @@ configuresize = ''
 # ---------------------------------------------------------------------------------------------------------#
 
 class MiPi:
-    def __init__(self):
-        pass
+    def __init__(self, msg):
+        self.msg = ''
 
     @classmethod
     def Main(cls):
         game_running = False
         engine_running = True
         speed = 5
-        pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
-        pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
+        player_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.playerx_to_editor)
+        player_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.playery_to_editor)
+        npc_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.npcx_to_editor)
+        npc_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.npcy_to_editor)
         MiPiSettings.enemy_x = 800 / 2
         MiPiSettings.enemy_y = 600 / 2
         e_moverandx = 0
@@ -118,36 +120,7 @@ class MiPi:
                 # edMouseX, edMouseY = pygame.mouse.get_pos()
                 # MiPiGUI Labels
 
-                if MiPiSettings.editableSprite:
-                    enginescreen.blit(MiPiGUI.spritelocationlabel, MiPiGUI.spriteborder)
-                    enginescreen.blit(MiPiGUI.xlabel, MiPiGUI.xborder)
-                    enginescreen.blit(MiPiGUI.ylabel, MiPiGUI.yborder)
-
-                    spritexlabel = MiPiGUI.smallfont.render(MiPiGUI.textx, True, Render.WHITE, Render.DARKSHADE)
-                    spritexborder = spritexlabel.get_rect()
-                    spritexborder.center = (500, 185)
-                    enginescreen.blit(spritexlabel, spritexborder)
-
-                    spriteylabel = MiPiGUI.smallfont.render(MiPiGUI.texty, True, Render.WHITE, Render.DARKSHADE)
-                    spriteyborder = spriteylabel.get_rect()
-                    spriteyborder.center = (600, 185)
-                    enginescreen.blit(spriteylabel, spriteyborder)
-
-                    # UI Horizontal sliders
-                    MiPiGUI.xlocbar.show()
-                    MiPiGUI.ylocbar.show()
-                    MiPiGUI.xlocbar.enable()
-                    MiPiGUI.ylocbar.enable()
-
-                    # UI Sprite Update Button enabled
-                    MiPiGUI.updatespr_button.show()
-                    MiPiGUI.updatespr_button.enable()
-
-                    # Get current slider values
-                    getspritex = MiPiGUI.xlocbar.get_current_value()
-                    getspritey = MiPiGUI.ylocbar.get_current_value()
-                    MiPiGUI.textx = str(getspritex)
-                    MiPiGUI.texty = str(getspritey)
+                MiPi.EditSprite()
 
                 # if event.type == pygame.MOUSEMOTION:
                 # print("X: %d, Y: %d" % (edMouseX, edMouseY))
@@ -174,139 +147,237 @@ class MiPi:
                             engine_running = False
                             game_running = False
                         if event.text == "Import Sprite":
+                            MiPiGUI.spritesubmenu.show()
+                        if event.text == "Player":
                             if platform.system() == MiPiSettings.Windows:
-                                spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                MiPiGUI.playermenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
                                     rect=pygame.Rect((200, 200), (260, 300)),
-                                    manager=MiPiGUI.mainframe, window_title="Select a sprite file",
+                                    manager=MiPiGUI.mainframe, window_title="Select a player sprite",
                                     initial_file_path="C:/",
                                     allow_existing_files_only=True, visible=True)
+                                MiPiSettings.playersprite = True
+                                MiPiSettings.editablePlayerSprite = True
+                                MiPiGUI.spritesubmenu.hide()
                             elif platform.system() == MiPiSettings.Mac:
-                                spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                MiPiGUI.playermenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
                                     rect=pygame.Rect((200, 200), (260, 300)),
-                                    manager=MiPiGUI.mainframe, window_title="Select a sprite file",
+                                    manager=MiPiGUI.mainframe, window_title="Select a player sprite",
                                     initial_file_path="~/Desktop",
                                     allow_existing_files_only=True, visible=True)
+                                MiPiSettings.playersprite = True
+                                MiPiSettings.editablePlayerSprite = True
+                                MiPiGUI.spritesubmenu.hide()
                             elif platform.system() == MiPiSettings.Linux:
-                                spritemenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                MiPiGUI.playermenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
                                     rect=pygame.Rect((200, 200), (260, 300)),
-                                    manager=MiPiGUI.mainframe, window_title="Select a sprite file",
+                                    manager=MiPiGUI.mainframe, window_title="Select a player sprite",
                                     initial_file_path="/bin",
                                     allow_existing_files_only=True, visible=True)
+                                MiPiSettings.playersprite = True
+                                MiPiSettings.editablePlayerSprite = True
+                                MiPiGUI.spritesubmenu.hide()
                             else:
                                 print(current_date, MiPiSettings.platform_error)
                                 logging.warning(current_date, MiPiSettings.platform_error)
 
-                            MiPiSettings.editableSprite = True
+                        if event.text == "NPC":
+                            MiPi.UnderDev(MiPiSettings.underdevelopment)
+                            MiPiSettings.npcsprite = True
+                            MiPiSettings.editableNPCSprite = True
+                            MiPiGUI.spritesubmenu.hide()
+                        if event.text == "Object":
+                            MiPi.UnderDev(MiPiSettings.underdevelopment)
+                            MiPiGUI.spritesubmenu.hide()
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED:
-                        if MiPiGUI.import_sprite is not None:
-                            MiPiGUI.import_sprite.kill()
+                        if MiPiSettings.import_player_sprite is not None:
+                            MiPiSettings.import_player_sprite.kill()
 
-                        try:
+                        # ----------- NPC Sprite Import --------------------------------------------------------------#
+                        if MiPiSettings.npcsprite:
+                            try:
 
-                            MiPiSettings.sprite_path = create_resource_path(event.text)
-                            MiPiSettings.sprite_image = pygame.image.load(MiPiSettings.sprite_path).convert_alpha()
-                            sprite_rect = MiPiSettings.sprite_image.get_rect()
-                            aspect_ratio = sprite_rect.width / sprite_rect.height
-                            scalability = False
+                                MiPiSettings.npc_path = create_resource_path(event.text)
+                                MiPiSettings.npc_img = pygame.image.load(MiPiSettings.npc_path).convert_alpha()
+                                npc_rect = MiPiSettings.npc_img.get_rect()
+                                aspect_ratio = npc_rect.width / npc_rect.height
+                                scalability = False
 
-                            if sprite_rect.width > MiPiGUI.max_image_display_dimensions[0]:
-                                sprite_rect.width = MiPiGUI.max_image_display_dimensions[0]
-                                sprite_rect.height = int(sprite_rect.width / aspect_ratio)
-                                scalability = True
+                                if npc_rect.width > MiPiGUI.max_image_display_dimensions[0]:
+                                    npc_rect.width = MiPiGUI.max_image_display_dimensions[0]
+                                    npc_rect.height = int(npc_rect.width / aspect_ratio)
+                                    scalability = True
 
-                            if sprite_rect.height > MiPiGUI.max_image_display_dimensions[1]:
-                                sprite_rect.height = MiPiGUI.max_image_display_dimensions[1]
-                                sprite_rect.width = int(sprite_rect.height * aspect_ratio)
-                                scalability = True
+                                if npc_rect.height > MiPiGUI.max_image_display_dimensions[1]:
+                                    npc_rect.height = MiPiGUI.max_image_display_dimensions[1]
+                                    npc_rect.width = int(npc_rect.height * aspect_ratio)
+                                    scalability = True
 
-                            if scalability:
-                                MiPiSettings.sprite_image = pygame.transform.smoothscale(MiPiSettings.sprite_image,
-                                                                                         sprite_rect.size)
+                                if scalability:
+                                    MiPiSettings.npc_img = pygame.transform.smoothscale(MiPiSettings.npc_img,
+                                                                                        npc_rect.size)
 
-                            # Boundary values are subject to change based on image size and scaling!
-                            # Make these values editable in a gui by the user: x range: 80-400
-                            # y range: 215-425  Best default: 80,425
+                                # Boundary values are subject to change based on image size and scaling!
+                                # Make these values editable in a gui by the user: x range: 80-400
+                                # y range: 215-425  Best default: 80,425
 
-                            inputx = 80
-                            inputy = 215
-                            x = inputx
-                            y = inputy
+                                npcinputx = 80
+                                npcinputy = 215
+                                npcx = npcinputx
+                                npcy = npcinputy
 
-                            # Get current slider values
-                            getspritex = MiPiGUI.xlocbar.get_current_value()
-                            getspritey = MiPiGUI.ylocbar.get_current_value()
-                            MiPiGUI.textx = str(getspritex)
-                            MiPiGUI.texty = str(getspritey)
-                            MiPiGUI.xlocbar.update(delta_time)
-                            MiPiGUI.ylocbar.update(delta_time)
+                                # Get current slider values
+                                getnpcspritex = MiPiGUI.npcxlocbar.get_current_value()
+                                getnpcspritey = MiPiGUI.npcylocbar.get_current_value()
+                                MiPiGUI.npctextx = str(getnpcspritex)
+                                MiPiGUI.npctexty = str(getnpcspritey)
+                                MiPiGUI.npcxlocbar.update(delta_time)
+                                MiPiGUI.npcylocbar.update(delta_time)
 
-                            x = getspritex
-                            y = getspritey
+                                npcx = getnpcspritex
+                                npcy = getnpcspritey
 
-                            sprite_rect.x = x
-                            sprite_rect.y = y
+                                npc_rect.x = npcx
+                                npc_rect.y = npcy
 
-                            if sprite_rect.x < 80 or sprite_rect.x > 400:
-                                print("Value out of range! Setting to default")
-                                sprite_rect.x = 80
+                                if npc_rect.x < 80 or npc_rect.x > 400:
+                                    print("Value out of range! Setting to default")
+                                    npc_rect.x = 80
 
-                            if sprite_rect.y < 215 or sprite_rect.y > 425:
-                                print("Value out of range! Setting to default")
-                                sprite_rect.y = 425
+                                if npc_rect.y < 215 or npc_rect.y > 425:
+                                    print("Value out of range! Setting to default")
+                                    npc_rect.y = 425
 
-                            sprite_rect.center = (sprite_rect.x, sprite_rect.y)
+                                npc_rect.center = (npc_rect.x, npc_rect.y)
 
-                            # UI manager mainframe has now been created after pygame.init()
-                            # Thank you MyreMylar(pygame_gui) for your help in spotting this :)
-                            # Currently see line 14 of MiPiGUI file for pygame.init()
-                            MiPiGUI.import_sprite = UIImage(relative_rect=sprite_rect,
-                                                            image_surface=MiPiSettings.sprite_image,
-                                                            manager=MiPiGUI.mainframe)
+                                # UI manager mainframe has now been created after pygame.init()
+                                # Thank you MyreMylar(pygame_gui) for your help in spotting this :)
+                                # Currently see line 14 of MiPiGUI file for pygame.init()
+                                MiPiSettings.import_npc_sprite = UIImage(relative_rect=npc_rect,
+                                                                         image_surface=MiPiSettings.npc_img,
+                                                                         manager=MiPiGUI.mainframe)
 
-                            MiPiSettings.spritex_to_editor = (sprite_rect.x / 400)
-                            MiPiSettings.spritey_to_editor = (sprite_rect.y / 425)
-                            pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
-                            pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
-                            pos_x = pos_x - MiPiSettings.offset_x
-                            pos_y = pos_y - MiPiSettings.offset_y
+                                MiPiSettings.npcx_to_editor = (npc_rect.x / 400)
+                                MiPiSettings.npcy_to_editor = (npc_rect.y / 425)
+                                npc_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.npcx_to_editor)
+                                npc_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.npcy_to_editor)
+                                npc_pos_x = npc_pos_x - MiPiSettings.offset_x
+                                npc_pos_y = npc_pos_y - MiPiSettings.offset_y
 
-                            MiPiSettings.editor_has_content = True
+                                MiPiSettings.editor_has_content = True
 
-                        except pygame.error:
-                            pass
+                            except pygame.error:
+                                pass
+                        # --------------------------------------------------------------------------------------------#
+
+                        # ----------- Player Sprite Import -----------------------------------------------------------#
+                        if MiPiSettings.playersprite:
+                            try:
+
+                                MiPiSettings.sprite_path = create_resource_path(event.text)
+                                MiPiSettings.player_img = pygame.image.load(MiPiSettings.sprite_path).convert_alpha()
+                                sprite_rect = MiPiSettings.player_img.get_rect()
+                                aspect_ratio = sprite_rect.width / sprite_rect.height
+                                scalability = False
+
+                                if sprite_rect.width > MiPiGUI.max_image_display_dimensions[0]:
+                                    sprite_rect.width = MiPiGUI.max_image_display_dimensions[0]
+                                    sprite_rect.height = int(sprite_rect.width / aspect_ratio)
+                                    scalability = True
+
+                                if sprite_rect.height > MiPiGUI.max_image_display_dimensions[1]:
+                                    sprite_rect.height = MiPiGUI.max_image_display_dimensions[1]
+                                    sprite_rect.width = int(sprite_rect.height * aspect_ratio)
+                                    scalability = True
+
+                                if scalability:
+                                    MiPiSettings.player_img = pygame.transform.smoothscale(MiPiSettings.player_img,
+                                                                                           sprite_rect.size)
+
+                                # Boundary values are subject to change based on image size and scaling!
+                                # Make these values editable in a gui by the user: x range: 80-400
+                                # y range: 215-425  Best default: 80,425
+
+                                inputx = 80
+                                inputy = 215
+                                x = inputx
+                                y = inputy
+
+                                # Get current slider values
+                                getspritex = MiPiGUI.playerxlocbar.get_current_value()
+                                getspritey = MiPiGUI.playerylocbar.get_current_value()
+                                MiPiGUI.textx = str(getspritex)
+                                MiPiGUI.texty = str(getspritey)
+                                MiPiGUI.playerxlocbar.update(delta_time)
+                                MiPiGUI.playerylocbar.update(delta_time)
+
+                                x = getspritex
+                                y = getspritey
+
+                                sprite_rect.x = x
+                                sprite_rect.y = y
+
+                                if sprite_rect.x < 80 or sprite_rect.x > 400:
+                                    print("Value out of range! Setting to default")
+                                    sprite_rect.x = 80
+
+                                if sprite_rect.y < 215 or sprite_rect.y > 425:
+                                    print("Value out of range! Setting to default")
+                                    sprite_rect.y = 425
+
+                                sprite_rect.center = (sprite_rect.x, sprite_rect.y)
+
+                                # UI manager mainframe has now been created after pygame.init()
+                                # Thank you MyreMylar(pygame_gui) for your help in spotting this :)
+                                # Currently see line 14 of MiPiGUI file for pygame.init()
+                                MiPiSettings.import_player_sprite = UIImage(relative_rect=sprite_rect,
+                                                                            image_surface=MiPiSettings.player_img,
+                                                                            manager=MiPiGUI.mainframe)
+
+                                MiPiSettings.playerx_to_editor = (sprite_rect.x / 400)
+                                MiPiSettings.playery_to_editor = (sprite_rect.y / 425)
+                                player_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.playerx_to_editor)
+                                player_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.playery_to_editor)
+                                player_pos_x = player_pos_x - MiPiSettings.offset_x
+                                player_pos_y = player_pos_y - MiPiSettings.offset_y
+
+                                MiPiSettings.editor_has_content = True
+
+                            except pygame.error:
+                                pass
+                        # --------------------------------------------------------------------------------------------#
 
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
-                        if event.ui_element == MiPiGUI.updatespr_button:
+                        if event.ui_element == MiPiGUI.updateplayer_button:
                             print(inprogress)
-                            MiPiGUI.import_sprite.hide()
+                            MiPiSettings.import_player_sprite.hide()
 
                     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                        if event.ui_element == MiPiGUI.updatespr_button:
-                            change_rect = MiPiSettings.sprite_image.get_rect()
-                            movex = MiPiGUI.xlocbar.get_current_value()
-                            movey = MiPiGUI.ylocbar.get_current_value()
+                        if event.ui_element == MiPiGUI.updateplayer_button:
+                            change_rect = MiPiSettings.player_img.get_rect()
+                            movex = MiPiGUI.playerxlocbar.get_current_value()
+                            movey = MiPiGUI.playerylocbar.get_current_value()
                             change_rect.x = movex
                             change_rect.y = movey
                             change_rect.center = (change_rect.x, change_rect.y)
-                            MiPiGUI.import_sprite = UIImage(relative_rect=change_rect,
-                                                            image_surface=MiPiSettings.sprite_image,
-                                                            manager=MiPiGUI.mainframe)
+                            MiPiSettings.import_player_sprite = UIImage(relative_rect=change_rect,
+                                                                        image_surface=MiPiSettings.player_img,
+                                                                        manager=MiPiGUI.mainframe)
 
-                            MiPiSettings.spritex_to_editor = (change_rect.x / 400)
-                            MiPiSettings.spritey_to_editor = (change_rect.y / 425)
-                            pos_x = (MiPiGUI.g_screen_x * MiPiSettings.spritex_to_editor)
-                            pos_y = (MiPiGUI.g_screen_y * MiPiSettings.spritey_to_editor)
-                            pos_x = pos_x - MiPiSettings.offset_x
-                            pos_y = pos_y - MiPiSettings.offset_y
+                            MiPiSettings.playerx_to_editor = (change_rect.x / 400)
+                            MiPiSettings.playery_to_editor = (change_rect.y / 425)
+                            player_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.playerx_to_editor)
+                            player_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.playery_to_editor)
+                            player_pos_x = player_pos_x - MiPiSettings.offset_x
+                            player_pos_y = player_pos_y - MiPiSettings.offset_y
 
-                            getspritex = MiPiGUI.xlocbar.get_current_value()
-                            getspritey = MiPiGUI.ylocbar.get_current_value()
+                            getspritex = MiPiGUI.playerxlocbar.get_current_value()
+                            getspritey = MiPiGUI.playerylocbar.get_current_value()
                             MiPiGUI.textx = str(getspritex)
                             MiPiGUI.texty = str(getspritey)
-                            MiPiGUI.xlocbar.update(delta_time)
-                            MiPiGUI.ylocbar.update(delta_time)
+                            MiPiGUI.playerxlocbar.update(delta_time)
+                            MiPiGUI.playerylocbar.update(delta_time)
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE:
@@ -319,6 +390,7 @@ class MiPi:
                 # I did notice that de-indenting update methods will put them outside the main engine's
                 # while loop. For now, just gonna keep them in the while loop unless I can find a
                 # workaround.
+
                 MiPiGUI.mainframe.process_events(event)
                 MiPiGUI.mainframe.draw_ui(enginescreen)
                 MiPiGUI.mainframe.update(delta_time)
@@ -335,15 +407,15 @@ class MiPi:
                 gamescreen.fill(Render.BLUE)
 
                 # Player movement boundaries
-                if pos_x > MiPiGUI.g_screen_x - 1:
-                    pos_x = 0
-                elif pos_x < 0:
-                    pos_x = MiPiGUI.g_screen_x
+                if player_pos_x > MiPiGUI.g_screen_x - 1:
+                    player_pos_x = 0
+                elif player_pos_x < 0:
+                    player_pos_x = MiPiGUI.g_screen_x
 
-                if pos_y > MiPiGUI.g_screen_y - 1:
-                    pos_y = 0
-                elif pos_y < 0:
-                    pos_y = MiPiGUI.g_screen_y
+                if player_pos_y > MiPiGUI.g_screen_y - 1:
+                    player_pos_y = 0
+                elif player_pos_y < 0:
+                    player_pos_y = MiPiGUI.g_screen_y
 
                 # Enemy movement boundaries
                 if MiPiSettings.enemy_x > MiPiGUI.g_screen_x - 1:
@@ -373,41 +445,41 @@ class MiPi:
                 # Movement loop
                 if game.type == pygame.KEYDOWN:
                     if game.key == pygame.K_LEFT:
-                        pos_x -= speed
+                        player_pos_x -= speed
                         print("(<) Left key pressed")
                     if game.key == pygame.K_RIGHT:
-                        pos_x += speed
+                        player_pos_x += speed
                         print("(>) Right key pressed")
                     if game.key == pygame.K_UP:
-                        pos_y -= speed
+                        player_pos_y -= speed
                         print("(^) Up key pressed")
                     if game.key == pygame.K_DOWN:
-                        pos_y += speed
+                        player_pos_y += speed
                         print("(v)Down key pressed")
                     if game.key == pygame.K_a:
-                        pos_x -= speed
+                        player_pos_x -= speed
                         print("(a) Left key pressed")
                     if game.key == pygame.K_d:
-                        pos_x += speed
+                        player_pos_x += speed
                         print("(d) Right key pressed")
                     if game.key == pygame.K_w:
-                        pos_y -= speed
+                        player_pos_y -= speed
                         print("(w) Up key pressed")
                     if game.key == pygame.K_s:
-                        pos_y += speed
+                        player_pos_y += speed
                         print("(s) Down key pressed")
                 elif game.type == pygame.KEYUP:
                     if game.key == pygame.K_LEFT:
-                        pos_x -= 0
+                        player_pos_x -= 0
                         print("Left key released")
                     if game.key == pygame.K_RIGHT:
-                        pos_x += 0
+                        player_pos_x += 0
                         print("Right key released")
                     if game.key == pygame.K_UP:
-                        pos_y -= 0
+                        player_pos_y -= 0
                         print("Up key released")
                     if game.key == pygame.K_DOWN:
-                        pos_y += 0
+                        player_pos_y += 0
                         print("Down key released")
                     if game.key == pygame.K_ESCAPE:
                         pygame.display.set_caption(engine_title)
@@ -415,8 +487,8 @@ class MiPi:
                         game_running = False
 
                 pygame.display.set_caption(game_title)
-                # MiPi.RenderTest(pos_x, pos_y)
-                MiPi.LoadSprite(pos_x, pos_y)
+                # MiPi.RenderTest(player_pos_x, player_pos_y)
+                MiPi.LoadSprite(player_pos_x, player_pos_y)
                 MiPi.LoadEnemy(MiPiSettings.enemy_x, MiPiSettings.enemy_y)
 
                 # The below is commented out, because UI is NOT being drawn to the game screen.
@@ -428,7 +500,7 @@ class MiPi:
                 pygame.display.flip()
                 pygame.display.update()
 
-        return MiPiSettings.sprite_image, MiPiSettings.sprite_path
+        return MiPiSettings.player_img, MiPiSettings.sprite_path, MiPiSettings.npc_img, MiPiSettings.npc_path
 
     @classmethod
     def RenderTest(cls, x, y):
@@ -437,7 +509,7 @@ class MiPi:
     @classmethod
     def LoadSprite(cls, x, y):
         try:
-            loadsprite = MiPiSettings.sprite_image
+            loadsprite = MiPiSettings.player_img
             gamescreen.blit(loadsprite, (x, y))
             if loadsprite is None:
                 print(editor_error)
@@ -493,3 +565,79 @@ class MiPi:
             print('Operating system: unknown - Engine running (unexpected results may occur!)')
         logging.info(current_date)
         logging.info("MiPi Engine alpha v1.2.1 has been initialized")
+
+    def UnderDev(self):
+        msg = MiPiSettings.underdevelopment
+        print(current_date, msg)
+
+    @classmethod
+    def EraseUI(cls):
+        MiPiGUI.playerxlocbar.hide()
+        MiPiGUI.playerylocbar.hide()
+        MiPiGUI.npcxlocbar.hide()
+        MiPiGUI.npcylocbar.hide()
+
+    @classmethod
+    def EditSprite(cls):
+
+        if MiPiSettings.editablePlayerSprite:
+            enginescreen.blit(MiPiGUI.playerlocationlabel, MiPiGUI.playerborder)
+            enginescreen.blit(MiPiGUI.playerxlabel, MiPiGUI.playerxborder)
+            enginescreen.blit(MiPiGUI.playerylabel, MiPiGUI.playeryborder)
+
+            playerxlabel = MiPiGUI.smallfont.render(MiPiGUI.textx, True, Render.WHITE, Render.DARKSHADE)
+            playerxborder = playerxlabel.get_rect()
+            playerxborder.center = (500, 185)
+            enginescreen.blit(playerxlabel, playerxborder)
+
+            playerylabel = MiPiGUI.smallfont.render(MiPiGUI.texty, True, Render.WHITE, Render.DARKSHADE)
+            playeryborder = playerylabel.get_rect()
+            playeryborder.center = (600, 185)
+            enginescreen.blit(playerylabel, playeryborder)
+
+            # UI Horizontal sliders
+            MiPiGUI.playerxlocbar.show()
+            MiPiGUI.playerylocbar.show()
+            MiPiGUI.playerxlocbar.enable()
+            MiPiGUI.playerylocbar.enable()
+
+            # UI Sprite Update Button enabled
+            MiPiGUI.updateplayer_button.show()
+            MiPiGUI.updateplayer_button.enable()
+
+            # Get current slider values
+            getspritex = MiPiGUI.playerxlocbar.get_current_value()
+            getspritey = MiPiGUI.playerylocbar.get_current_value()
+            MiPiGUI.textx = str(getspritex)
+            MiPiGUI.texty = str(getspritey)
+
+        if MiPiSettings.editableNPCSprite:
+            enginescreen.blit(MiPiGUI.npclocationlabel, MiPiGUI.npcborder)
+            enginescreen.blit(MiPiGUI.npcxlabel, MiPiGUI.playerxborder)
+            enginescreen.blit(MiPiGUI.npcylabel, MiPiGUI.npcyborder)
+
+            npcxlabel = MiPiGUI.smallfont.render(MiPiGUI.npctextx, True, Render.WHITE, Render.DARKSHADE)
+            npcxborder = npcxlabel.get_rect()
+            npcxborder.center = (500, 370)
+            enginescreen.blit(npcxlabel, npcxborder)
+
+            npcylabel = MiPiGUI.smallfont.render(MiPiGUI.npctexty, True, Render.WHITE, Render.DARKSHADE)
+            npcyborder = npcylabel.get_rect()
+            npcyborder.center = (600, 370)
+            enginescreen.blit(npcylabel, npcyborder)
+
+            # UI Horizontal sliders
+            MiPiGUI.npcxlocbar.show()
+            MiPiGUI.npcylocbar.show()
+            MiPiGUI.npcxlocbar.enable()
+            MiPiGUI.npcylocbar.enable()
+
+            # UI Sprite Update Button enabled
+            MiPiGUI.updatenpc_button.show()
+            MiPiGUI.updatenpc_button.enable()
+
+            # Get current slider values
+            getnpcspritex = MiPiGUI.npcxlocbar.get_current_value()
+            getnpcspritey = MiPiGUI.npcylocbar.get_current_value()
+            MiPiGUI.npctextx = str(getnpcspritex)
+            MiPiGUI.npctexty = str(getnpcspritey)
