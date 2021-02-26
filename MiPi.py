@@ -56,7 +56,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine alpha v1.2.1 - © Aaron Keith Sanders"
+engine_title = "MiPi Engine alpha v1.2.2 - © Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -157,6 +157,9 @@ class MiPi:
                                     allow_existing_files_only=True, visible=True)
                                 MiPiSettings.playersprite = True
                                 MiPiSettings.editablePlayerSprite = True
+                                MiPiSettings.editableNPCSprite = False
+                                MiPiSettings.npcsprite = False
+                                MiPi.EraseUI()
                                 MiPiGUI.spritesubmenu.hide()
                             elif platform.system() == MiPiSettings.Mac:
                                 MiPiGUI.playermenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
@@ -166,6 +169,7 @@ class MiPi:
                                     allow_existing_files_only=True, visible=True)
                                 MiPiSettings.playersprite = True
                                 MiPiSettings.editablePlayerSprite = True
+                                MiPiSettings.editableNPCSprite = False
                                 MiPiGUI.spritesubmenu.hide()
                             elif platform.system() == MiPiSettings.Linux:
                                 MiPiGUI.playermenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
@@ -175,6 +179,7 @@ class MiPi:
                                     allow_existing_files_only=True, visible=True)
                                 MiPiSettings.playersprite = True
                                 MiPiSettings.editablePlayerSprite = True
+                                MiPiSettings.editableNPCSprite = False
                                 MiPiGUI.spritesubmenu.hide()
                             else:
                                 print(current_date, MiPiSettings.platform_error)
@@ -184,6 +189,9 @@ class MiPi:
                             MiPi.UnderDev(MiPiSettings.underdevelopment)
                             MiPiSettings.npcsprite = True
                             MiPiSettings.editableNPCSprite = True
+                            MiPiSettings.playersprite = False
+                            MiPiSettings.editablePlayerSprite = False
+                            MiPi.EraseUI()
                             MiPiGUI.spritesubmenu.hide()
                         if event.text == "Object":
                             MiPi.UnderDev(MiPiSettings.underdevelopment)
@@ -489,7 +497,7 @@ class MiPi:
                 pygame.display.set_caption(game_title)
                 # MiPi.RenderTest(player_pos_x, player_pos_y)
                 MiPi.LoadSprite(player_pos_x, player_pos_y)
-                MiPi.LoadEnemy(MiPiSettings.enemy_x, MiPiSettings.enemy_y)
+                # MiPi.LoadEnemy(MiPiSettings.enemy_x, MiPiSettings.enemy_y)
 
                 # The below is commented out, because UI is NOT being drawn to the game screen.
                 # If you decide to add pygame_gui UI elements, then please use these!
@@ -553,8 +561,9 @@ class MiPi:
     def EngineInit():
 
         # This method is called upon starting the MiPi engine
+        print(MiPiSettings.reminders_one)
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
-        print(current_date, ": MiPi Engine ", MiPiSettings.current_version, " has been initialized")
+        print(current_date, ": ", MiPiSettings.current_version, " has been initialized")
         if platform.system() == MiPiSettings.Windows:
             print('Operating system: Windows detected - Engine running')
         elif platform.system() == MiPiSettings.Mac:
@@ -564,7 +573,7 @@ class MiPi:
         else:
             print('Operating system: unknown - Engine running (unexpected results may occur!)')
         logging.info(current_date)
-        logging.info("MiPi Engine alpha v1.2.1 has been initialized")
+        logging.info(MiPiSettings.log_msg)
 
     def UnderDev(self):
         msg = MiPiSettings.underdevelopment
@@ -572,10 +581,15 @@ class MiPi:
 
     @classmethod
     def EraseUI(cls):
-        MiPiGUI.playerxlocbar.hide()
-        MiPiGUI.playerylocbar.hide()
-        MiPiGUI.npcxlocbar.hide()
-        MiPiGUI.npcylocbar.hide()
+        if not MiPiSettings.editablePlayerSprite:
+            MiPiGUI.playerxlocbar.hide()
+            MiPiGUI.playerylocbar.hide()
+            MiPiGUI.updateplayer_button.hide()
+
+        if not MiPiSettings.editableNPCSprite:
+            MiPiGUI.npcxlocbar.hide()
+            MiPiGUI.npcylocbar.hide()
+            MiPiGUI.updatenpc_button.hide()
 
     @classmethod
     def EditSprite(cls):
@@ -613,8 +627,14 @@ class MiPi:
 
         if MiPiSettings.editableNPCSprite:
             enginescreen.blit(MiPiGUI.npclocationlabel, MiPiGUI.npcborder)
-            enginescreen.blit(MiPiGUI.npcxlabel, MiPiGUI.playerxborder)
+            enginescreen.blit(MiPiGUI.npcxlabel, MiPiGUI.npcxborder)
             enginescreen.blit(MiPiGUI.npcylabel, MiPiGUI.npcyborder)
+
+            # Get current slider values
+            getnpcspritex = MiPiGUI.npcxlocbar.get_current_value()
+            getnpcspritey = MiPiGUI.npcylocbar.get_current_value()
+            MiPiGUI.npctextx = str(getnpcspritex)
+            MiPiGUI.npctexty = str(getnpcspritey)
 
             npcxlabel = MiPiGUI.smallfont.render(MiPiGUI.npctextx, True, Render.WHITE, Render.DARKSHADE)
             npcxborder = npcxlabel.get_rect()
@@ -635,9 +655,3 @@ class MiPi:
             # UI Sprite Update Button enabled
             MiPiGUI.updatenpc_button.show()
             MiPiGUI.updatenpc_button.enable()
-
-            # Get current slider values
-            getnpcspritex = MiPiGUI.npcxlocbar.get_current_value()
-            getnpcspritey = MiPiGUI.npcylocbar.get_current_value()
-            MiPiGUI.npctextx = str(getnpcspritex)
-            MiPiGUI.npctexty = str(getnpcspritey)

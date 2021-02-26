@@ -2,7 +2,15 @@
 
 
 # Mipi variables
-current_version = "alpha v1.2.1"
+current_version = "MiPi Engine alpha v1.2.2"
+log_msg = (current_version, " has been initialized")
+reminders_one = ''' 
+Remove lines of code for npcsprite = False @ 161 and playersprite = False @ 192. 
+These were bandaid fixes. You added them, so as to remove duplicate sprites, 
+but one sprite is actually the npc and the other is the player. 
+You want multiple sprites on the screen, so do not let duplicates confuse you! 
+'''
+
 editor_has_content = False
 player_img = None
 npc_img = None

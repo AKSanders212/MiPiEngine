@@ -8,7 +8,7 @@ import MiPi
 def main():
     # Primary engine methods
     MiPi.MiPi.EngineInit()
-    MiPi.MiPi.EnemySpeed()
+    #MiPi.MiPi.EnemySpeed()
     MiPi.MiPi.Main()
 
 

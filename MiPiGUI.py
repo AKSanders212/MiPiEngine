@@ -26,10 +26,10 @@ mainframe = pygame_gui.UIManager((UIlimitwidth, UIlimitheight))
 play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 35), (90, 50)),
                                            text='Test Game', manager=mainframe)
 
-updateplayer_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 230), (130, 50)),
+updateplayer_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 230), (130, 50)),
                                                    text='Update Location', visible=0, manager=mainframe)
 
-updatenpc_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((450, 230), (130, 50)),
+updatenpc_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 410), (130, 50)),
                                                 text='Update Location', visible=0, manager=mainframe)
 
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((35, 35), (150, 50)), starting_option=
@@ -115,11 +115,11 @@ playerylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 205, 100, 20),
                                    value_range=(215, 425), visible=0,
                                    manager=mainframe)
 
-npcxlocbar = UIHorizontalSlider(relative_rect=pygame.Rect(450, 205, 100, 20), start_value=80,
+npcxlocbar = UIHorizontalSlider(relative_rect=pygame.Rect(450, 380, 100, 20), start_value=80,
                                 value_range=(80, 400), visible=0,
                                 manager=mainframe)
 
-npcylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 205, 100, 20), start_value=215,
+npcylocbar = UIHorizontalSlider(relative_rect=pygame.Rect(550, 380, 100, 20), start_value=215,
                                 value_range=(215, 425), visible=0,
                                 manager=mainframe)
 
