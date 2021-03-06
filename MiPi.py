@@ -158,7 +158,6 @@ class MiPi:
                                 MiPiSettings.playersprite = True
                                 MiPiSettings.editablePlayerSprite = True
                                 MiPiSettings.editableNPCSprite = False
-                                MiPiSettings.npcsprite = False
                                 MiPi.EraseUI()
                                 MiPiGUI.spritesubmenu.hide()
                             elif platform.system() == MiPiSettings.Mac:
@@ -186,10 +185,15 @@ class MiPi:
                                 logging.warning(current_date, MiPiSettings.platform_error)
 
                         if event.text == "NPC":
+                            MiPiGUI.npcmenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                rect=pygame.Rect((200, 200), (260, 300)),
+                                manager=MiPiGUI.mainframe, window_title="Select an npc sprite",
+                                initial_file_path="C:/",
+                                allow_existing_files_only=True, visible=True)
+
                             MiPi.UnderDev(MiPiSettings.underdevelopment)
                             MiPiSettings.npcsprite = True
                             MiPiSettings.editableNPCSprite = True
-                            MiPiSettings.playersprite = False
                             MiPiSettings.editablePlayerSprite = False
                             MiPi.EraseUI()
                             MiPiGUI.spritesubmenu.hide()
@@ -356,6 +360,7 @@ class MiPi:
                                 pass
                         # --------------------------------------------------------------------------------------------#
 
+                    # ------------------- UPDATE PLAYER BUTTON CONTROLS ---------------------------------------------------#
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
                         if event.ui_element == MiPiGUI.updateplayer_button:
                             print(inprogress)
@@ -386,6 +391,44 @@ class MiPi:
                             MiPiGUI.texty = str(getspritey)
                             MiPiGUI.playerxlocbar.update(delta_time)
                             MiPiGUI.playerylocbar.update(delta_time)
+
+                # ----------------------------------------------------------------------------------------------------#
+
+                # ------------------- UPDATE NPC BUTTON CONTROLS -----------------------------------------------------#
+
+                    if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
+                        if event.ui_element == MiPiGUI.updatenpc_button:
+                            print(inprogress)
+                            MiPiSettings.import_npc_sprite.hide()
+
+                    if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                        if event.ui_element == MiPiGUI.updatenpc_button:
+                            print("NPC button pressed")
+                            change_rect_npc = MiPiSettings.npc_img.get_rect()
+                            movenpcx = MiPiGUI.npcxlocbar.get_current_value()
+                            movenpcy = MiPiGUI.npcylocbar.get_current_value()
+                            change_rect_npc.x = movenpcx
+                            change_rect_npc.y = movenpcy
+                            change_rect_npc.center = (change_rect_npc.x, change_rect_npc.y)
+                            MiPiSettings.import_npc_sprite = UIImage(relative_rect=change_rect_npc,
+                                                                     image_surface=MiPiSettings.npc_img,
+                                                                     manager=MiPiGUI.mainframe)
+
+                            MiPiSettings.npcx_to_editor = (change_rect_npc.x / 400)
+                            MiPiSettings.npcy_to_editor = (change_rect_npc.y / 425)
+                            npc_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.npcx_to_editor)
+                            npc_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.npcy_to_editor)
+                            npc_pos_x = npc_pos_x - MiPiSettings.offset_x
+                            npc_pos_y = npc_pos_y - MiPiSettings.offset_y
+
+                            getnpcspritex = MiPiGUI.npcxlocbar.get_current_value()
+                            getnpcspritey = MiPiGUI.npcylocbar.get_current_value()
+                            MiPiGUI.npctextx = str(getnpcspritex)
+                            MiPiGUI.npctexty = str(getnpcspritey)
+                            MiPiGUI.npcxlocbar.update(delta_time)
+                            MiPiGUI.npcylocbar.update(delta_time)
+
+                # ----------------------------------------------------------------------------------------------------#
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_ESCAPE:
@@ -561,7 +604,6 @@ class MiPi:
     def EngineInit():
 
         # This method is called upon starting the MiPi engine
-        print(MiPiSettings.reminders_one)
         logging.basicConfig(filename='mipi.log', level=logging.INFO)
         print(current_date, ": ", MiPiSettings.current_version, " has been initialized")
         if platform.system() == MiPiSettings.Windows:

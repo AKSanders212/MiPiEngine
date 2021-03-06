@@ -27,10 +27,10 @@ play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 35), 
                                            text='Test Game', manager=mainframe)
 
 updateplayer_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 230), (130, 50)),
-                                                   text='Update Location', visible=0, manager=mainframe)
+                                                   text='Update Player', visible=0, manager=mainframe)
 
 updatenpc_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 410), (130, 50)),
-                                                text='Update Location', visible=0, manager=mainframe)
+                                                text='Update NPC', visible=0, manager=mainframe)
 
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((35, 35), (150, 50)), starting_option=
 "File", options_list=["Run", "Import Sprite", "Close"], manager=mainframe)
