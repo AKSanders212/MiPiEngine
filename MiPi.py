@@ -56,7 +56,7 @@ sysclock = pygame.time.Clock()
 mainFPS = 110
 delta_time = sysclock.tick(mainFPS) / 1000.0
 # Main engine frame settings
-engine_title = "MiPi Engine alpha v1.2.2 - © Aaron Keith Sanders"
+engine_title = "MiPi Engine alpha v1.3 - © Aaron Keith Sanders"
 pygame.display.set_caption(engine_title)
 # Game window settings
 game_title = "Gamescreen"
@@ -148,6 +148,8 @@ class MiPi:
                             game_running = False
                         if event.text == "Import Sprite":
                             MiPiGUI.spritesubmenu.show()
+
+                        # ------------------------ Import Sprite --------------------------------------------------#
                         if event.text == "Player":
                             if platform.system() == MiPiSettings.Windows:
                                 MiPiGUI.playermenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
@@ -200,6 +202,41 @@ class MiPi:
                         if event.text == "Object":
                             MiPi.UnderDev(MiPiSettings.underdevelopment)
                             MiPiGUI.spritesubmenu.hide()
+                        # ------------------------ Import Sprite --------------------------------------------------#
+
+                        # -------------- Import Tilemap -----------------------------------------------------------#
+
+                        if event.text == "Import Tilemap":
+                            print(MiPiSettings.underdevelopment)
+                            if platform.system() == MiPiSettings.Windows:
+                                MiPiGUI.tilemapmenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                    rect=pygame.Rect((200, 200), (260, 300)),
+                                    manager=MiPiGUI.mainframe, window_title="Select a tilemap",
+                                    initial_file_path="C:/",
+                                    allow_existing_files_only=True, visible=True)
+                                MiPiSettings.tilemap_chosen = True
+                                MiPiSettings.tilemap_ready = True
+                            elif platform.system() == MiPiSettings.Mac:
+                                MiPiGUI.tilemapmenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                    rect=pygame.Rect((200, 200), (260, 300)),
+                                    manager=MiPiGUI.mainframe, window_title="Select a tilemap",
+                                    initial_file_path="~/Desktop",
+                                    allow_existing_files_only=True, visible=True)
+                                MiPiSettings.tilemap_chosen = True
+                                MiPiSettings.tilemap_ready = True
+                            elif platform.system() == MiPiSettings.Linux:
+                                MiPiGUI.tilemapmenu = pygame_gui.windows.ui_file_dialog.UIFileDialog(
+                                    rect=pygame.Rect((200, 200), (260, 300)),
+                                    manager=MiPiGUI.mainframe, window_title="Select a tilemap",
+                                    initial_file_path="/bin",
+                                    allow_existing_files_only=True, visible=True)
+                                MiPiSettings.tilemap_chosen = True
+                                MiPiSettings.tilemap_ready = True
+                            else:
+                                print(current_date, MiPiSettings.platform_error)
+                                logging.warning(current_date, MiPiSettings.platform_error)
+
+                        # -------------- Import Tilemap -----------------------------------------------------------#
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_FILE_DIALOG_PATH_PICKED:
@@ -283,6 +320,50 @@ class MiPi:
                                 pass
                         # --------------------------------------------------------------------------------------------#
 
+                        if MiPiSettings.tilemap_chosen:
+                            try:
+
+                                MiPiSettings.tile_path = create_resource_path(event.text)
+                                MiPiSettings.tilemap_img = pygame.image.load(MiPiSettings.tile_path).convert_alpha()
+                                tilemap_rect = MiPiSettings.tilemap_img.get_rect()
+                                scalability = False
+
+                                if tilemap_rect.width >= MiPiGUI.max_image_display_dimensions[0]:
+                                    tilemap_rect.width = MiPiGUI.edwidth
+                                    tilemap_rect.height = MiPiGUI.edheight
+                                    scalability = True
+
+                                if tilemap_rect.height > MiPiGUI.max_image_display_dimensions[1]:
+                                    tilemap_rect.height = MiPiGUI.tilemap_height
+                                    tilemap_rect.width = MiPiGUI.tilemap_width
+                                    scalability = True
+
+                                if tilemap_rect.width <= MiPiGUI.max_image_display_dimensions[0]:
+                                    tilemap_rect.width = MiPiGUI.tilemap_width
+                                    tilemap_rect.height = MiPiGUI.tilemap_height
+                                    scalability = True
+
+                                if tilemap_rect.height < MiPiGUI.max_image_display_dimensions[1]:
+                                    tilemap_rect.height = MiPiGUI.tilemap_height
+                                    tilemap_rect.width = MiPiGUI.tilemap_width
+                                    scalability = True
+
+                                if scalability:
+                                    MiPiSettings.tilemap_img = pygame.transform.smoothscale(MiPiSettings.tilemap_img,
+                                                                                            tilemap_rect.size)
+
+                                tilemap_rect.x = 238
+                                tilemap_rect.y = 321
+                                tilemap_rect.center = (tilemap_rect.x, tilemap_rect.y)
+
+                                MiPiSettings.import_tilemap = UIImage(relative_rect=tilemap_rect,
+                                                                      image_surface=MiPiSettings.tilemap_img,
+                                                                      manager=MiPiGUI.mainframe)
+
+                                MiPiSettings.tilemap_chosen = False
+                            except pygame.error:
+                                pass
+
                         # ----------- Player Sprite Import -----------------------------------------------------------#
                         if MiPiSettings.playersprite:
                             try:
@@ -306,6 +387,11 @@ class MiPi:
                                 if scalability:
                                     MiPiSettings.player_img = pygame.transform.smoothscale(MiPiSettings.player_img,
                                                                                            sprite_rect.size)
+
+                                # Removes any duplicate copies of player sprites in the editor
+                                if MiPiSettings.player_removeduplicates >= 1:
+                                    MiPiSettings.player_img.fill(Render.TRANSPARENCY)
+                                    MiPiSettings.player_removeduplicates = 0
 
                                 # Boundary values are subject to change based on image size and scaling!
                                 # Make these values editable in a gui by the user: x range: 80-400
@@ -354,6 +440,7 @@ class MiPi:
                                 player_pos_x = player_pos_x - MiPiSettings.offset_x
                                 player_pos_y = player_pos_y - MiPiSettings.offset_y
 
+                                MiPiSettings.playersprite_available = True
                                 MiPiSettings.editor_has_content = True
 
                             except pygame.error:
@@ -392,9 +479,9 @@ class MiPi:
                             MiPiGUI.playerxlocbar.update(delta_time)
                             MiPiGUI.playerylocbar.update(delta_time)
 
-                # ----------------------------------------------------------------------------------------------------#
+                    # ----------------------------------------------------------------------------------------------------#
 
-                # ------------------- UPDATE NPC BUTTON CONTROLS -----------------------------------------------------#
+                    # ------------------- UPDATE NPC BUTTON CONTROLS -----------------------------------------------------#
 
                     if event.user_type == pygame_gui.UI_BUTTON_START_PRESS:
                         if event.ui_element == MiPiGUI.updatenpc_button:
@@ -403,7 +490,6 @@ class MiPi:
 
                     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                         if event.ui_element == MiPiGUI.updatenpc_button:
-                            print("NPC button pressed")
                             change_rect_npc = MiPiSettings.npc_img.get_rect()
                             movenpcx = MiPiGUI.npcxlocbar.get_current_value()
                             movenpcy = MiPiGUI.npcylocbar.get_current_value()
@@ -455,7 +541,13 @@ class MiPi:
                     MiPi.Main()
                     game_running = False
 
+                # The screen gets rendered a color to be tested regardless if a tilemap is ready to be tested.
                 gamescreen.fill(Render.BLUE)
+
+                # If the user has placed a tilemap and is ready to test with a tilemap, then blit it to the test screen
+                if MiPiSettings.tilemap_ready:
+                    gamescreen.blit(
+                        pygame.transform.scale(MiPiSettings.tilemap_img, (MiPiGUI.g_screen_x, MiPiGUI.g_screen_y)), (0, 0))
 
                 # Player movement boundaries
                 if player_pos_x > MiPiGUI.g_screen_x - 1:
@@ -563,6 +655,17 @@ class MiPi:
             loadsprite = MiPiSettings.player_img
             gamescreen.blit(loadsprite, (x, y))
             if loadsprite is None:
+                print(editor_error)
+        except IOError as e:
+            pass
+
+    @classmethod
+    def LoadTilemap(cls, x, y):
+        try:
+            loadtilemap = MiPiSettings.tilemap_img
+            gamescreen.blit(loadtilemap, (x, y))
+            pygame.transform.scale(loadtilemap, (MiPiGUI.g_screen_x, MiPiGUI.g_screen_y))
+            if loadtilemap is None:
                 print(editor_error)
         except IOError as e:
             pass

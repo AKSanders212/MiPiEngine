@@ -33,10 +33,11 @@ updatenpc_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 
                                                 text='Update NPC', visible=0, manager=mainframe)
 
 dropmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((35, 35), (150, 50)), starting_option=
-"File", options_list=["Run", "Import Sprite", "Close"], manager=mainframe)
+"File", options_list=["Run", "Import Sprite", "Import Tilemap", "Close"], manager=mainframe)
 
 spritesubmenu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((165, 90), (190, 50)), starting_option=
 "Choose Sprite Type: ", options_list=["Player", "NPC", "Object"], visible=0, manager=mainframe)
+
 
 # Max dimmensions for the game screen - Make sure that no sprite will be bigger than 1/3 of the overall screen size.
 g_screen_x = 800
@@ -46,6 +47,11 @@ max_image_display_dimensions = (g_screen_x / 4, g_screen_y / 4)
 size = (375, 275)
 screensize = (200, 156, 200, 156)
 editorscreen = pygame.Surface(size)
+edwidth = 50
+edheight = 185
+
+tilemap_height = 280
+tilemap_width = 370
 
 edx = 100
 edy = 155
@@ -128,6 +134,9 @@ playermenu = None
 npcmenu = None
 objmenu = None
 
+# Menu variable for importing a tilemap file
+tilemapmenu = None
+
 
 class GUI:
 
@@ -143,4 +152,4 @@ class GUI:
     def EditorScreen(cls):
         pygame.draw.rect(editorscreen, Render.BLUE, screensize)
         editorscreen.fill(Render.BLUE)
-        MiPi.enginescreen.blit(editorscreen, (50, 185))
+        MiPi.enginescreen.blit(editorscreen, (edwidth, edheight))

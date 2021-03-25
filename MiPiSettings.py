@@ -2,7 +2,7 @@
 
 
 # Mipi variables
-current_version = "MiPi Engine alpha v1.2.2"
+current_version = "MiPi Engine alpha v1.3"
 log_msg = (current_version, " has been initialized")
 reminders_one = ''' 
 Remove lines of code for npcsprite = False @ 161 and playersprite = False @ 192. 
@@ -41,7 +41,13 @@ Mac = 'Darwin'
 underdevelopment = 'This feature is still in development'
 playersprite = False
 npcsprite = False
-
+npc_removeduplicates = 0
+player_removeduplicates = 0
+tilemap_chosen = False
+tilemap_img = None
+tile_path = None
+import_tilemap = None
+tilemap_ready = False
 
 class Settings:
 
