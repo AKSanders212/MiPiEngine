@@ -48,6 +48,8 @@ tilemap_img = None
 tile_path = None
 import_tilemap = None
 tilemap_ready = False
+tilemap_available = False
+playersprite_available = False
 
 class Settings:
 

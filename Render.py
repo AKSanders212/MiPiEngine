@@ -31,9 +31,3 @@ class Shapes:
         verts = [(50, 0), (100, 50), (50, 50), (0, 50)]
         triangle.fill(DARKGRAY)
         pygame.draw.polygon(triangle, GREEN, verts)
-
-
-
-
-
-
