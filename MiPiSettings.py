@@ -1,4 +1,6 @@
 # MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
+import pygame
+from pygame import *
 
 
 # Mipi variables
@@ -10,10 +12,10 @@ These were bandaid fixes. You added them, so as to remove duplicate sprites,
 but one sprite is actually the npc and the other is the player. 
 You want multiple sprites on the screen, so do not let duplicates confuse you! 
 '''
-
+size = 0, 0
 editor_has_content = False
 player_img = None
-npc_img = None
+npc_img = pygame.Surface(size)
 enemy_image = None
 sprite_path = None
 npc_path = None
