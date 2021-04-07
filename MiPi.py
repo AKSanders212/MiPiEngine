@@ -24,6 +24,8 @@ import os
 import random
 
 # Initialize pygame
+from MiPiEngine import MiPiPhysics
+
 pygame.init()
 
 # --------------------------------- All Global Variables ----------------------------------------------------#
