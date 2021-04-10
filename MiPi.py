@@ -78,6 +78,8 @@ e_moverandx = 0
 e_moverandy = 0
 
 configuresize = ''
+box_x = 200
+box_y = 200
 
 
 # ---------------------------------------------------------------------------------------------------------#
@@ -90,7 +92,8 @@ class MiPi:
     def Main(cls):
         game_running = False
         engine_running = True
-        speed = 5
+        speed_x = 5
+        speed_y = 5
         player_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.playerx_to_editor)
         player_pos_y = (MiPiGUI.g_screen_y * MiPiSettings.playery_to_editor)
         npc_pos_x = (MiPiGUI.g_screen_x * MiPiSettings.npcx_to_editor)
@@ -104,8 +107,13 @@ class MiPi:
         edMouseY = 0
         inputx = 0
         inputy = 0
-
+        m_forwards = 'moving forwards'
+        m_backwards = 'moving backwards'
+        m_up = 'moving up'
+        m_down = 'moving down'
+        currentposition = ''
         Render.Shapes.CreateTriangle()
+        MiPiPhysics.Player.BoxCollider2D(enginescreen, Render.GREEN, 30, 30, 60, 60)
 
         while engine_running:
             for event in pygame.event.get():
@@ -553,6 +561,7 @@ class MiPi:
 
                 # The screen gets rendered a color to be tested regardless if a tilemap is ready to be tested.
                 gamescreen.fill(Render.BLUE)
+                MiPi.DrawBoxCol(box_x, box_y)
 
                 # If the user has placed a tilemap and is ready to test with a tilemap, then blit it to the test screen
                 if MiPiSettings.tilemap_ready:
@@ -599,29 +608,48 @@ class MiPi:
                 # Movement loop
                 if game.type == pygame.KEYDOWN:
                     if game.key == pygame.K_LEFT:
-                        player_pos_x -= speed
-                        print("(<) Left key pressed")
+                        player_pos_x -= speed_x
+                        print("(<) Left key pressed", currentposition)
+                        currentposition = m_backwards
                     if game.key == pygame.K_RIGHT:
-                        player_pos_x += speed
-                        print("(>) Right key pressed")
+                        player_pos_x += speed_x
+                        print("(>) Right key pressed", currentposition)
+                        currentposition = m_forwards
                     if game.key == pygame.K_UP:
-                        player_pos_y -= speed
-                        print("(^) Up key pressed")
+                        player_pos_y -= speed_y
+                        print("(^) Up key pressed", currentposition)
+                        currentposition = m_up
                     if game.key == pygame.K_DOWN:
-                        player_pos_y += speed
-                        print("(v)Down key pressed")
+                        player_pos_y += speed_y
+                        print("(v)Down key pressed", currentposition)
+                        currentposition = m_down
                     if game.key == pygame.K_a:
-                        player_pos_x -= speed
-                        print("(a) Left key pressed")
+                        player_pos_x -= speed_x
+                        print("(a) Left key pressed", currentposition)
+                        currentposition = m_backwards
                     if game.key == pygame.K_d:
-                        player_pos_x += speed
-                        print("(d) Right key pressed")
+                        player_pos_x += speed_x
+                        print("(d) Right key pressed", currentposition)
+                        currentposition = m_forwards
                     if game.key == pygame.K_w:
-                        player_pos_y -= speed
-                        print("(w) Up key pressed")
+                        player_pos_y -= speed_y
+                        print("(w) Up key pressed", currentposition)
+                        currentposition = m_up
                     if game.key == pygame.K_s:
-                        player_pos_y += speed
-                        print("(s) Down key pressed")
+                        player_pos_y += speed_y
+                        print("(s) Down key pressed", currentposition)
+                        currentposition = m_down
+                    # Collisions ------------------------------------
+                    if box_x == player_pos_x and box_y == player_pos_y:
+                        print('x:', player_pos_x, 'y:', player_pos_y)
+                        if currentposition == m_forwards and game.key == pygame.K_RIGHT or game.key == pygame.K_d:
+                            player_pos_x = box_x
+                            speed_x = 0
+                        if game.key == pygame.K_a:
+                            speed_x = 5
+                        elif game.key == pygame.K_LEFT:
+                            speed_x = 5
+
                 elif game.type == pygame.KEYUP:
                     if game.key == pygame.K_LEFT:
                         player_pos_x -= 0
@@ -640,6 +668,9 @@ class MiPi:
                         MiPi.Main()
                         game_running = False
 
+                MiPi.DrawBoxCol(box_x, box_y)
+                MiPi.CheckForCollision(box_x, box_y, player_pos_x)
+
                 pygame.display.set_caption(game_title)
                 # MiPi.RenderTest(player_pos_x, player_pos_y)
                 MiPi.LoadPlayer(player_pos_x, player_pos_y)
@@ -655,11 +686,21 @@ class MiPi:
                 pygame.display.flip()
                 pygame.display.update()
 
-        return MiPiSettings.player_img, MiPiSettings.sprite_path, MiPiSettings.npc_img, MiPiSettings.npc_path
+        return MiPiSettings.player_img, MiPiSettings.sprite_path, \
+               MiPiSettings.npc_img, MiPiSettings.npc_path, player_pos_x
 
     @classmethod
     def RenderTest(cls, x, y):
         gamescreen.blit(Render.triangle, (x, y))
+
+    @classmethod
+    def DrawBoxCol(cls, x, y):
+        enginescreen.blit(MiPiPhysics.Player.boxsurface, (x, y))
+
+    @classmethod
+    def CheckForCollision(cls, x, y, player_x):
+        if player_x == box_x:
+            print('collision has occured at:', box_x, 'x')
 
     @classmethod
     def LoadPlayer(cls, x, y):

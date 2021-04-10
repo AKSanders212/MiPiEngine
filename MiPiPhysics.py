@@ -2,6 +2,8 @@
 
 import pygame
 from pygame import *
+import Render
+
 
 class Player:
 
@@ -18,7 +20,7 @@ class Player:
     rigidbody2D = False
     addphysics = None
     addboxcollider = None
-    size = (300, 300)
+    size = (50, 50)
     boxsurface = pygame.Surface(size)
 
     def __init__(self):
@@ -26,5 +28,6 @@ class Player:
 
     @classmethod
     def BoxCollider2D(cls, surface, color, w, h, x, y):
+        Player.boxsurface.fill(Render.GREEN)
         pygame.draw.rect(surface, color, pygame.Rect(w, h, x, y))
 
