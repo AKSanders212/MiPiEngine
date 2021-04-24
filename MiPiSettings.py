@@ -1,7 +1,10 @@
 # MiPi Engine alpha v1.0 - © Aaron Keith Sanders - All Rights Reserved
 import pygame
 from pygame import *
+import Render
+from Render import *
 
+pygame.init()
 
 # Mipi variables
 current_version = "MiPi Engine alpha v1.3"
@@ -53,7 +56,36 @@ tilemap_ready = False
 tilemap_available = False
 playersprite_available = False
 
+
 class Settings:
 
     def __init__(self):
         pass
+
+
+class Errors:
+    font = pygame.font.Font('freesansbold.ttf', 32)
+
+    def __init__(self, msg, text, size, x, y):
+        self.msg = ''
+        self.x = 0
+        self.y = 0
+        self.size = (x, y)
+        self.text = ''
+
+    @staticmethod
+    def NotAvailableBox():
+        x = 500
+        y = 500
+        size = (x, y)
+        text = Errors.font.render('Uh oh, youre either missing a resource or youre importing in the wrong order!', True,
+                           Render.RED, Render.BLACK)
+        # window screen
+        error1_screen = pygame.display.set_mode(size)
+        pygame.display.set_caption('Error01: [Resource Not Available] ')
+        text_rect = text.get_rect()
+        text_rect.center = (x // 2, y // 2)
+        error1_screen.fill(Render.LIGHTCOLOR)
+        error1_screen.blit(text, text_rect)
+
+        pygame.display.update()

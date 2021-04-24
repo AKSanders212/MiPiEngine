@@ -81,6 +81,9 @@ configuresize = ''
 box_x = 200
 box_y = 200
 
+col_range_x = range(170, 200)
+col_range_y = range(200, 220)
+
 
 # ---------------------------------------------------------------------------------------------------------#
 
@@ -561,7 +564,10 @@ class MiPi:
 
                 # The screen gets rendered a color to be tested regardless if a tilemap is ready to be tested.
                 gamescreen.fill(Render.BLUE)
+                # Collider box2D
                 MiPi.DrawBoxCol(box_x, box_y)
+                # Remove this later
+                MiPi.ShowPlayerPos(player_pos_x, player_pos_y)
 
                 # If the user has placed a tilemap and is ready to test with a tilemap, then blit it to the test screen
                 if MiPiSettings.tilemap_ready:
@@ -640,15 +646,17 @@ class MiPi:
                         print("(s) Down key pressed", currentposition)
                         currentposition = m_down
                     # Collisions ------------------------------------
-                    if box_x == player_pos_x and box_y == player_pos_y:
-                        print('x:', player_pos_x, 'y:', player_pos_y)
+                    if player_pos_x in range(170, 200) and player_pos_y in range(170, 200):
+                        print('Player is in collision RANGE!')
                         if currentposition == m_forwards and game.key == pygame.K_RIGHT or game.key == pygame.K_d:
-                            player_pos_x = box_x
+                            player_pos_x = 170
                             speed_x = 0
-                        if game.key == pygame.K_a:
+                        elif game.key == pygame.K_a:
                             speed_x = 5
+                            player_pos_x -= speed_x
                         elif game.key == pygame.K_LEFT:
                             speed_x = 5
+                            player_pos_x -= speed_x
 
                 elif game.type == pygame.KEYUP:
                     if game.key == pygame.K_LEFT:
@@ -688,6 +696,10 @@ class MiPi:
 
         return MiPiSettings.player_img, MiPiSettings.sprite_path, \
                MiPiSettings.npc_img, MiPiSettings.npc_path, player_pos_x
+
+    @classmethod
+    def ShowPlayerPos(cls, x, y):
+        print('player_x:', x, 'player_y:', y)
 
     @classmethod
     def RenderTest(cls, x, y):

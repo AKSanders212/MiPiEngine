@@ -20,6 +20,7 @@ DARKSHADE = (80, 80, 80)
 BLACK = (0, 0, 0)
 BLUE = (0, 150, 255)
 TRANSPARENCY = (0, 0, 0, 0)
+RED = (255, 0, 0)
 
 
 class Shapes:
